@@ -13,6 +13,8 @@ import ConfirmationCodeScreen from '../screens/ConfrimPassword';
 import ResetPasswordScreen from '../screens/ChangePassword';
 import ActivityScreen from '../screens/ActivityScreen';
 import HistoryActivityScreen from '../screens/HistoryActivityScreen';
+import ExerciseVideoScreen from '../screens/ExerciseScreen/ExerciseVideoScreen';
+import ExerciseDetailScreen from '../screens/ExerciseScreen/ExerciseDetailScreen';
 const Stack = createNativeStackNavigator();
 
 export default function MainNav() {
@@ -64,6 +66,8 @@ export default function MainNav() {
         <Stack.Screen name="Home" component={BottomTab} />
         <Stack.Screen name="ActivityScreen" component={ActivityScreen} />
         <Stack.Screen name="HistoryActivityScreen" component={HistoryActivityScreen} />
+        <Stack.Screen name="ExerciseVideoScreen" component={ExerciseVideoScreen} />
+        <Stack.Screen name="ExerciseDetailScreen" component={ExerciseDetailScreen} />
         </Stack.Navigator>
     </NavigationContainer>
   );
