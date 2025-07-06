@@ -18,6 +18,8 @@ import CongratulationScreen from '../screens/CongratulationScreen';
 import ReportWaterScreen from '../screens/ReportWaterScreen';
 import WaterHistory from '../screens/WaterHistory';
 
+import MusicListScreen from '../screens/MusicListScreen';
+import PlayerScreen from '../screens/PlayMusic';
 const Stack = createNativeStackNavigator();
 
 export default function MainNav() {
@@ -68,13 +70,14 @@ export default function MainNav() {
         />
         <Stack.Screen name="Home" component={BottomTab} />
 
-        
           <Stack.Screen name="WaterEntryScreen" component={WaterEntryScreen} options={{ headerShown: false }} />
           <Stack.Screen name="WaterGoalScreen" component={WaterGoalScreen} options={{ headerShown: false }} />
           <Stack.Screen name="DrinkWaterGlassScreen" component={DrinkWaterScreen} options={{ headerShown: false }} />
           <Stack.Screen name="CongratulationScreen" component={CongratulationScreen} options={{ headerShown: false}}/>
           <Stack.Screen name="ReportWaterScreen" component={ReportWaterScreen} options={{ headerShown: false}}/>
            <Stack.Screen name="WaterHistory" component={WaterHistory} options={{ headerShown: false}}/>
+        <Stack.Screen name='MusicListScreen' component={MusicListScreen}/>
+        <Stack.Screen name='PlayerScreen' component={PlayerScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
