@@ -11,6 +11,8 @@ import BottomTab from './BottomTab';
 import ForgotPasswordScreen from '../screens/ForgotPassword';
 import ConfirmationCodeScreen from '../screens/ConfrimPassword';
 import ResetPasswordScreen from '../screens/ChangePassword';
+import MusicListScreen from '../screens/MusicListScreen';
+import PlayerScreen from '../screens/PlayMusic';
 const Stack = createNativeStackNavigator();
 
 export default function MainNav() {
@@ -60,6 +62,8 @@ export default function MainNav() {
           }}
         />
         <Stack.Screen name="Home" component={BottomTab} />
+        <Stack.Screen name='MusicListScreen' component={MusicListScreen}/>
+        <Stack.Screen name='PlayerScreen' component={PlayerScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
