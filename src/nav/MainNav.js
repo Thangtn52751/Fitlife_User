@@ -11,6 +11,8 @@ import BottomTab from './BottomTab';
 import ForgotPasswordScreen from '../screens/ForgotPassword';
 import ConfirmationCodeScreen from '../screens/ConfrimPassword';
 import ResetPasswordScreen from '../screens/ChangePassword';
+import ActivityScreen from '../screens/ActivityScreen';
+import HistoryActivityScreen from '../screens/HistoryActivityScreen';
 const Stack = createNativeStackNavigator();
 
 export default function MainNav() {
@@ -60,7 +62,9 @@ export default function MainNav() {
           }}
         />
         <Stack.Screen name="Home" component={BottomTab} />
-      </Stack.Navigator>
+        <Stack.Screen name="ActivityScreen" component={ActivityScreen} />
+        <Stack.Screen name="HistoryActivityScreen" component={HistoryActivityScreen} />
+        </Stack.Navigator>
     </NavigationContainer>
   );
 }
