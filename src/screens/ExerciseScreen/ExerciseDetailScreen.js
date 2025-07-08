@@ -1,80 +1,148 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
     View,
     Text,
     StyleSheet,
-    Image,
-    FlatList,
     SafeAreaView,
-    ScrollView,
     TouchableOpacity,
-    ImageBackground,
+    ScrollView,
+    Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
-const MOCK_DETAIL = {
-    title: "Lower Body Training",
-    description:
-        "The lower abdomen and hips are the most difficult areas of the body to reduce when we are on a diet. Even so, in this area, especially the legs as a whole, you can reduce weight even if you don’t use tools.",
-    image:
-        "https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
-    rounds: [
-        { id: 1, title: "Jumping Jacks", duration: "00:30", image: "https://images.pexels.com/photos/1552249/pexels-photo-1552249.jpeg" },
-        { id: 2, title: "Squats", duration: "01:00", image: "https://images.pexels.com/photos/4662438/pexels-photo-4662438.jpeg" },
-        { id: 3, title: "Backward Lunge", duration: "00:30", image: "https://images.pexels.com/photos/9491291/pexels-photo-9491291.jpeg" },
-        // ... thêm nếu muốn
-    ],
-};
-
-const RoundItem = ({ item }) => (
-    <View style={styles.roundItem}>
-        <Image source={{ uri: item.image }} style={styles.roundImage} />
-        <View style={{ flex: 1 }}>
-            <Text style={styles.roundTitle}>{item.title}</Text>
-            <Text style={styles.roundTime}>{item.duration}</Text>
-        </View>
-        <TouchableOpacity>
-            <Ionicons name="play" size={24} color="#000" />
-        </TouchableOpacity>
-    </View>
-);
+import Video from "react-native-video";
+import axios from "axios";
 
 const ExerciseDetailScreen = ({ route, navigation }) => {
-    const { title, description, image, rounds } = MOCK_DETAIL; // sau này lấy từ route.params hoặc API
+    const { exercise } = route.params;
+    const videoRef = useRef(null);
+
+    const [rounds, setRounds] = useState([]);
+    const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
+    const [countdown, setCountdown] = useState(null);
+    const [isRunning, setIsRunning] = useState(false);
+    const [isFinished, setIsFinished] = useState(false);
+
+    useEffect(() => {
+        const fetchRounds = async () => {
+            try {
+                const res = await axios.get(`http://192.168.0.105:3000/api/exercise-rounds/${exercise._id}`);
+                const sorted = res.data.sort((a, b) => a.order - b.order);
+                setRounds(sorted);
+            } catch (error) {
+                console.error("Lỗi khi tải rounds:", error);
+            }
+        };
+        fetchRounds();
+    }, [exercise._id]);
+
+    // Đếm ngược và seek video
+    useEffect(() => {
+        let timer;
+        if (isRunning && countdown !== null) {
+            if (countdown > 0) {
+                timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+            } else {
+                if (currentRoundIndex < rounds.length - 1) {
+                    const nextIndex = currentRoundIndex + 1;
+                    const nextRound = rounds[nextIndex];
+                    setCurrentRoundIndex(nextIndex);
+                    setCountdown(nextRound.durationSec);
+
+                    // Tính tổng giây để seek video
+                    let offset = 0;
+                    for (let i = 0; i < nextIndex; i++) {
+                        offset += rounds[i].durationSec;
+                    }
+                    videoRef.current?.seek(offset);
+                } else {
+                    setIsFinished(true);
+                    setIsRunning(false);
+                    Alert.alert("🎉 Đã hoàn thành bài tập!");
+                }
+            }
+        }
+        return () => clearTimeout(timer);
+    }, [countdown, isRunning]);
+
+    const handleStart = () => {
+        if (rounds.length === 0) return;
+        setIsRunning(true);
+        setCountdown(rounds[0].durationSec);
+        setCurrentRoundIndex(0);
+        setIsFinished(false);
+        videoRef.current?.seek(0);
+    };
+
+    const currentRound = rounds[currentRoundIndex];
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={styles.backButton}
-                >
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="chevron-back" size={24} color="#000" />
                 </TouchableOpacity>
 
-                <Text style={styles.heading}>Tên Bộ Bài Tập</Text>
+                <Text style={styles.heading}>{exercise.title}</Text>
 
-                <ImageBackground source={{ uri: image }} style={styles.thumbnail} imageStyle={{ borderRadius: 16 }}>
-                    <Ionicons
-                        name="play-circle"
-                        size={48}
-                        color="#ec4899"
-                        style={styles.playIcon}
+                <View style={styles.videoContainer}>
+                    <Video
+                        ref={videoRef}
+                        source={{ uri: exercise.videoUrl }}
+                        style={styles.video}
+                        controls
+                        resizeMode="cover"
+                        paused={!isRunning}
                     />
-                </ImageBackground>
+                </View>
 
                 <View style={styles.infoContainer}>
-                    <Text style={styles.title}>{title}</Text>
-                    <Text style={styles.description}>{description}</Text>
+                    <Text style={styles.title}>{exercise.title}</Text>
+                    <Text style={styles.description}>{exercise.description}</Text>
 
-                    <View style={styles.roundsRow}>
-                        <Text style={styles.roundsLabel}>Rounds</Text>
-                        <Text style={styles.roundsCount}>1/{rounds.length}</Text>
+                    <View style={styles.detailsRow}>
+                        <Text style={styles.detailText}>⏱ {exercise.durationMin} phút</Text>
+                        <Text style={styles.detailText}>🔥 {exercise.calories} calo</Text>
+                        <Text style={styles.detailText}>📈 Cấp độ: {exercise.level}</Text>
                     </View>
 
-                    {rounds.map((round) => (
-                        <RoundItem key={round.id} item={round} />
-                    ))}
+                    {rounds.length > 0 && (
+                        <View style={{ marginTop: 20 }}>
+                            <Text style={styles.roundsTitle}>Các bước thực hiện:</Text>
+                            {rounds.map((r, i) => (
+                                <Text
+                                    key={r._id}
+                                    style={[
+                                        styles.roundText,
+                                        i === currentRoundIndex && isRunning && !isFinished && {
+                                            fontWeight: "700",
+                                            color: "#4ade80",
+                                        },
+                                    ]}
+                                >
+                                    {r.order}. {r.title} ({r.durationSec} giây)
+                                </Text>
+                            ))}
+                        </View>
+                    )}
+
+                    {isRunning && !isFinished && (
+                        <View style={styles.countdownBox}>
+                            <Text style={styles.countdownLabel}>🕒 {currentRound?.title}</Text>
+                            <Text style={styles.countdownValue}>{countdown}s</Text>
+                        </View>
+                    )}
+
+                    {!isRunning && !isFinished && (
+                        <TouchableOpacity style={styles.completeButton} onPress={handleStart}>
+                            <Text style={styles.completeText}>▶️ Bắt đầu</Text>
+                        </TouchableOpacity>
+                    )}
+
+                    {isFinished && (
+                        <TouchableOpacity style={styles.completeButton} onPress={() => navigation.goBack()}>
+                            <Text style={styles.completeText}>🔁 Quay về</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -87,7 +155,6 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: "#fff",
-        marginTop: 50
     },
     backButton: {
         position: "absolute",
@@ -96,25 +163,28 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     heading: {
-        fontSize: 18,
-        fontWeight: "600",
+        fontSize: 20,
+        fontWeight: "700",
         textAlign: "center",
         marginTop: 18,
     },
-    thumbnail: {
+    videoContainer: {
         width: "90%",
-        height: 180,
+        height: 200,
         alignSelf: "center",
-        marginTop: 16,
-        justifyContent: "center",
-        alignItems: "center",
+        marginTop: 20,
+        borderRadius: 12,
+        overflow: "hidden",
+        backgroundColor: "#000",
     },
-    playIcon: {
-        opacity: 0.9,
+    video: {
+        width: "100%",
+        height: "100%",
     },
     infoContainer: {
         paddingHorizontal: 20,
         paddingTop: 20,
+        paddingBottom: 30,
     },
     title: {
         fontSize: 18,
@@ -126,42 +196,47 @@ const styles = StyleSheet.create({
         color: "#6b7280",
         lineHeight: 20,
     },
-    roundsRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginTop: 24,
-        marginBottom: 8,
+    detailsRow: {
+        marginTop: 20,
+        gap: 10,
     },
-    roundsLabel: {
+    detailText: {
+        fontSize: 14,
+        color: "#374151",
+    },
+    roundsTitle: {
         fontSize: 16,
         fontWeight: "600",
+        marginBottom: 8,
     },
-    roundsCount: {
+    roundText: {
         fontSize: 14,
-        fontWeight: "500",
+        color: "#374151",
+        paddingVertical: 4,
     },
-    roundItem: {
-        flexDirection: "row",
-        backgroundColor: "#bae6fd",
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 14,
+    countdownBox: {
+        marginTop: 30,
         alignItems: "center",
     },
-    roundImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 10,
-        marginRight: 12,
+    countdownLabel: {
+        fontSize: 16,
+        marginBottom: 6,
     },
-    roundTitle: {
-        fontSize: 14,
+    countdownValue: {
+        fontSize: 38,
+        fontWeight: "800",
+        color: "#facc15",
+    },
+    completeButton: {
+        marginTop: 30,
+        backgroundColor: "#4ade80",
+        padding: 14,
+        borderRadius: 12,
+        alignItems: "center",
+    },
+    completeText: {
+        color: "#fff",
         fontWeight: "600",
-    },
-    roundTime: {
-        fontSize: 12,
-        color: "#0891b2",
-        marginTop: 2,
+        fontSize: 16,
     },
 });
