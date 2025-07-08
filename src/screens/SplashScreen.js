@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import FadeInImageReanimated from '../animation/FadeInImage';
 import WaveDots from '../animation/WaveDots';
 
@@ -7,11 +8,23 @@ const SplashScreen = ({ navigation }) => {
   if (Platform.OS !== 'android') return null;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('Onboarding');
-    }, 3500);
+    const checkOnboarding = async () => {
+      try {
+        const hasSeen = await AsyncStorage.getItem('hasSeenOnboarding');
+        setTimeout(() => {
+          if (hasSeen === 'true') {
+            navigation.replace('Login'); // Đã xem => chuyển Login
+          } else {
+            navigation.replace('Onboarding'); // Chưa xem => vào Onboarding
+          }
+        }, 3500);
+      } catch (err) {
+        console.error('Error reading onboarding flag', err);
+        navigation.replace('Onboarding');
+      }
+    };
 
-    return () => clearTimeout(timer);
+    checkOnboarding();
   }, [navigation]);
 
   return (
