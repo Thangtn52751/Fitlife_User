@@ -8,6 +8,7 @@ import AnalysisScreen from '../screens/AnalysisScreen.js';
 import ActivityScreen from '../screens/ActivityScreen.js';
 import MeditationScreen from '../screens/MeditationScreen.js';
 import ProfileScreen from '../screens/ProfileScreen.js';
+import TestGPSScreen from '../screens/TestGPSScreen.js';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,7 +48,7 @@ export default function TabNavigator() {
 
       <Tab.Screen
         name="Analysis"
-        component={AnalysisScreen}
+        component={TestGPSScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons

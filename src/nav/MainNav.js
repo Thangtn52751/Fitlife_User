@@ -13,6 +13,7 @@ import ConfirmationCodeScreen from '../screens/ConfrimPassword';
 import ResetPasswordScreen from '../screens/ChangePassword';
 import ActivityScreen from '../screens/ActivityScreen';
 import HistoryActivityScreen from '../screens/HistoryActivityScreen';
+import TestGPSScreen from '../screens/TestGPSScreen';
 const Stack = createNativeStackNavigator();
 
 export default function MainNav() {
@@ -64,6 +65,7 @@ export default function MainNav() {
         <Stack.Screen name="Home" component={BottomTab} />
         <Stack.Screen name="ActivityScreen" component={ActivityScreen} />
         <Stack.Screen name="HistoryActivityScreen" component={HistoryActivityScreen} />
+        <Stack.Screen name="TestGPSScreen" component={TestGPSScreen} />
         </Stack.Navigator>
     </NavigationContainer>
   );
