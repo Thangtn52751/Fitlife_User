@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 
@@ -22,7 +22,7 @@ function getWeekDates() {
   return days;
 }
 
-export default function WaterHistoryScreen() {
+export default function WaterHistoryScreen({navigation}) {
   const token = useSelector(state => state.auth.token);
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ export default function WaterHistoryScreen() {
 
   const fetchReport = async () => {
     try {
-      const res = await axios.get('http://192.168.1.138:3000/api/water/report', {
+      const res = await axios.get('http://192.168.154.92:3000/api/water/report', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setReport(res.data);
@@ -57,6 +57,9 @@ export default function WaterHistoryScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerRow}>
+        <TouchableOpacity onPress={() => {navigation.goBack()}}>
+          <Text style={styles.backBtn}>&lt;</Text>
+        </TouchableOpacity>
         <Text style={[styles.tab]}>History</Text>
         
       </View>
@@ -103,9 +106,9 @@ export default function WaterHistoryScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
- 
-  tab: { fontSize: 18, color: '#62CDFA', fontWeight: '600', marginBottom: 10, textAlign: "center", marginTop: 40 },
-  
+  backBtn: { fontSize: 28, color: '#5DCCFC' },
+  tab: { fontSize: 18, color: '#62CDFA', fontWeight: '600', marginBottom: 10, textAlign: "center", marginTop: 8, marginLeft: 150  },
+  headerRow: { flexDirection: 'row', marginTop: 28, marginHorizontal: 18 },
   weekWrap: { backgroundColor: '#eaf7ff', margin: 16, borderRadius: 12, padding: 12 },
   sectionTitle: { fontWeight: 'bold', color: '#2583c2', marginBottom: 8 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },

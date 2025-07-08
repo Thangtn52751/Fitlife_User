@@ -22,7 +22,7 @@ export default function WaterGoalScreen({ navigation }) {
     setMessage('');
     try {
       await axios.post(
-        'http://192.168.1.138:3000/api/water/set',
+        'http://192.168.154.92:3000/api/water/set',
         { targetGlasses, volumePerGlass: 250 },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -104,7 +104,7 @@ export default function WaterGoalScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F6FAFF' },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 28, marginHorizontal: 18 },
-  backBtn: { fontSize: 28, color: '#888' },
+  backBtn: { fontSize: 28, color: '#5DCCFC' },
   headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#222' },
   historyBtn: { color: '#3BB3FD', fontWeight: 'bold', fontSize: 16 },
   centerBigNum: {

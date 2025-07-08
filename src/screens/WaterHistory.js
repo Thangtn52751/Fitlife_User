@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 
-export default function WaterHistory() {
+export default function WaterHistory({ navigation }) {
   const token = useSelector(state => state.auth.token);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ export default function WaterHistory() {
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get('http://192.168.1.138:3000/api/water/history', {
+      const res = await axios.get('http://192.168.154.92:3000/api/water/history', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setData(res.data.data || []);
@@ -34,8 +34,14 @@ export default function WaterHistory() {
 
   if (!data.length) {
     return (
-      <View style={styles.center}>
-        <Text style={{ color: '#999' }}>Chưa có lịch sử uống nước.</Text>
+      <View>
+        <View style={styles.headerRow}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.backBtn}>&lt;</Text>
+          </TouchableOpacity>
+          <Text style = {{marginLeft : 20, marginTop: 3, fontSize: 20}}>Lịch sử uống nước</Text>
+        </View>
+        <Text style={{ color: '#999', textAlign : 'center', marginTop: 350, fontSize: 18 }}>Chưa có lịch sử uống nước.</Text>
       </View>
     );
   }
@@ -46,14 +52,14 @@ export default function WaterHistory() {
     });
     return (
       <View style={styles.row}>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <Text style={styles.date}>{dateStr}</Text>
         </View>
         <View>
           <Text style={styles.achieve}>
             {item.achieveGlasses || 0}/{item.targetGlasses || 0} cốc
           </Text>
-          <Text style={{color: item.achieveGlasses >= item.targetGlasses ? '#27ae60' : '#e74c3c'}}>
+          <Text style={{ color: item.achieveGlasses >= item.targetGlasses ? '#27ae60' : '#e74c3c' }}>
             {item.achieveGlasses >= item.targetGlasses ? 'Hoàn thành' : 'Chưa đạt'}
           </Text>
         </View>
@@ -68,7 +74,7 @@ export default function WaterHistory() {
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item._id || item.date}
-        contentContainerStyle={{padding: 10}}
+        contentContainerStyle={{ padding: 10 }}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
     </View>
@@ -82,5 +88,7 @@ const styles = StyleSheet.create({
   date: { fontWeight: '600', fontSize: 16, color: '#222' },
   achieve: { fontSize: 15, color: '#222' },
   separator: { height: 10 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', marginTop: 28, marginHorizontal: 18 },
+   backBtn: { fontSize: 28, color: '#5DCCFC' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' }
 });
