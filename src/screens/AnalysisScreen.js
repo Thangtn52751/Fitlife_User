@@ -1,4 +1,8 @@
 
+import { View, Text } from 'react-native'
+import React from 'react'
+
+
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 
@@ -40,7 +44,15 @@ export default function BMIScreen() {
     else setResult('Béo phì');
   };
 
+
+const AnalysisScreen = () => {
   return (
+
+    <View>
+      <Text>AnalysisScreen</Text>
+    </View>
+  )
+
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <Text style={styles.title}>Tính Chỉ Số BMI</Text>
 
@@ -74,26 +86,4 @@ export default function BMIScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, backgroundColor: '#fff', justifyContent: 'center' },
-  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 24 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#aaa',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  button: {
-    backgroundColor: '#4DA6FF',
-    padding: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  resultContainer: { marginTop: 20, alignItems: 'center' },
-  resultText: { fontSize: 20, fontWeight: '600' },
-  resultCategory: { fontSize: 18, color: '#888', marginTop: 5 },
-});
+export default AnalysisScreen

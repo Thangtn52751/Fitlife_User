@@ -11,6 +11,11 @@ import BottomTab from './BottomTab';
 import ForgotPasswordScreen from '../screens/ForgotPassword';
 import ConfirmationCodeScreen from '../screens/ConfrimPassword';
 import ResetPasswordScreen from '../screens/ChangePassword';
+
+import BmiScreen from '../screens/BMIScreen';
+import AddBmiScreen from '../screens/AddBMIScreen';
+import NotificationScreen from '../screens/NotificationScreen';
+
 import DrinkWaterScreen from '../screens/DrinkWaterScreen';
 import WaterGoalScreen from '../screens/WaterGoalScreen';
 import WaterEntryScreen from '../screens/WaterEntryScreen';
@@ -20,6 +25,7 @@ import WaterHistory from '../screens/WaterHistory';
 
 import MusicListScreen from '../screens/MusicListScreen';
 import PlayerScreen from '../screens/PlayMusic';
+
 const Stack = createNativeStackNavigator();
 
 export default function MainNav() {
@@ -32,6 +38,13 @@ export default function MainNav() {
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Onboarding" component={OnBoardingScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
+
+        <Stack.Screen name="Register" component={RegisterScreen}/>
+        <Stack.Screen name="Bmi" component={BmiScreen}/>
+        <Stack.Screen name="AddBMI" component={AddBmiScreen}/>
+        <Stack.Screen name="Notification" component={NotificationScreen}
+        options={{
+
         <Stack.Screen name="Register" component={RegisterScreen}
           options={{
             headerShown: true,
