@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
   Platform,
-  Dimensions,
+  Dimensions,git 
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRoute, useNavigation } from '@react-navigation/native';
