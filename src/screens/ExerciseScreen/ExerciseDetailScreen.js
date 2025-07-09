@@ -6,28 +6,40 @@ import {
     SafeAreaView,
     TouchableOpacity,
     ScrollView,
+    ImageBackground,
+    FlatList,
     Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Video from "react-native-video";
 import axios from "axios";
+import { API_BASE_URL } from "../../redux/config";
 
 const ExerciseDetailScreen = ({ route, navigation }) => {
     const { exercise } = route.params;
     const videoRef = useRef(null);
+    const flatListRef = useRef(null);
 
     const [rounds, setRounds] = useState([]);
     const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
-    const [countdown, setCountdown] = useState(null);
     const [isRunning, setIsRunning] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
 
     useEffect(() => {
         const fetchRounds = async () => {
             try {
-                const res = await axios.get(`http://192.168.0.105:3000/api/exercise-rounds/${exercise._id}`);
+                const res = await axios.get(`${API_BASE_URL}/exercise-rounds/${exercise._id}`);
                 const sorted = res.data.sort((a, b) => a.order - b.order);
-                setRounds(sorted);
+
+                // Tính thời điểm bắt đầu mỗi round
+                let time = 0;
+                const roundsWithStart = sorted.map((r) => {
+                    const result = { ...r, startTime: time };
+                    time += r.durationSec;
+                    return result;
+                });
+
+                setRounds(roundsWithStart);
             } catch (error) {
                 console.error("Lỗi khi tải rounds:", error);
             }
@@ -35,42 +47,54 @@ const ExerciseDetailScreen = ({ route, navigation }) => {
         fetchRounds();
     }, [exercise._id]);
 
-    // Đếm ngược và seek video
-    useEffect(() => {
-        let timer;
-        if (isRunning && countdown !== null) {
-            if (countdown > 0) {
-                timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-            } else {
-                if (currentRoundIndex < rounds.length - 1) {
-                    const nextIndex = currentRoundIndex + 1;
-                    const nextRound = rounds[nextIndex];
-                    setCurrentRoundIndex(nextIndex);
-                    setCountdown(nextRound.durationSec);
-
-                    // Tính tổng giây để seek video
-                    let offset = 0;
-                    for (let i = 0; i < nextIndex; i++) {
-                        offset += rounds[i].durationSec;
-                    }
-                    videoRef.current?.seek(offset);
-                } else {
-                    setIsFinished(true);
-                    setIsRunning(false);
-                    Alert.alert("🎉 Đã hoàn thành bài tập!");
-                }
-            }
-        }
-        return () => clearTimeout(timer);
-    }, [countdown, isRunning]);
-
     const handleStart = () => {
         if (rounds.length === 0) return;
         setIsRunning(true);
-        setCountdown(rounds[0].durationSec);
         setCurrentRoundIndex(0);
         setIsFinished(false);
-        videoRef.current?.seek(0);
+    };
+
+    // const handleComplete = async () => {
+    //     try {
+    //         await axios.post(`${API_BASE_URL}/api/history`, {
+    //             exerciseId: exercise._id,
+    //             timestamp: new Date(),
+    //         });
+    //         Alert.alert("✅ Thành công", "Đã lưu vào lịch sử!");
+    //         navigation.goBack();
+    //     } catch (error) {
+    //         console.error("Lỗi khi lưu lịch sử:", error);
+    //         Alert.alert("❌ Lỗi", "Không thể lưu lịch sử.");
+    //     }
+    // };
+
+    const renderRoundItem = ({ item, index }) => {
+        const isCurrent = isRunning && currentRoundIndex === index;
+
+        return (
+            <TouchableOpacity
+                style={[styles.roundItem, isCurrent && !isFinished && { backgroundColor: "#bbf7d0" }]}
+                onPress={() => {
+                    if (videoRef.current && item.startTime !== undefined) {
+                        videoRef.current.seek(item.startTime); // ⏩ Seek video
+                        setCurrentRoundIndex(index);
+                        setIsRunning(true);
+                        setIsFinished(false);
+                    }
+                }}
+            >
+                <ImageBackground
+                    source={{ uri: item.imageUrl }}
+                    style={styles.roundImage}
+                    imageStyle={{ borderRadius: 12 }}
+                />
+                <View style={{ flex: 1, marginHorizontal: 10 }}>
+                    <Text style={styles.roundTitle}>{item.title}</Text>
+                    <Text style={styles.roundDuration}>00:{item.durationSec.toString().padStart(2, '0')}</Text>
+                </View>
+                <Ionicons name="play" size={20} color="#000" />
+            </TouchableOpacity>
+        );
     };
 
     const currentRound = rounds[currentRoundIndex];
@@ -78,25 +102,45 @@ const ExerciseDetailScreen = ({ route, navigation }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="chevron-back" size={24} color="#000" />
-                </TouchableOpacity>
+                <View style={styles.headerRow}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Ionicons name="chevron-back" size={24} color="#000" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Tên Bộ Bài Tập</Text>
+                    <View style={{ width: 24 }} />
+                </View>
 
-                <Text style={styles.heading}>{exercise.title}</Text>
-
-                <View style={styles.videoContainer}>
-                    <Video
-                        ref={videoRef}
-                        source={{ uri: exercise.videoUrl }}
-                        style={styles.video}
-                        controls
-                        resizeMode="cover"
-                        paused={!isRunning}
-                    />
+                <View style={styles.previewContainer}>
+                    {!isRunning ? (
+                        <TouchableOpacity
+                            onPress={handleStart}
+                            activeOpacity={0.8}
+                            style={styles.previewTouchable}
+                        >
+                            <ImageBackground
+                                source={{ uri: exercise.imageUrl }}
+                                style={styles.previewImage}
+                                imageStyle={{ borderRadius: 16 }}
+                            >
+                                <Ionicons name="play-circle" size={64} color="#f472b6" />
+                            </ImageBackground>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={styles.previewImage}>
+                            <Video
+                                ref={videoRef}
+                                source={{ uri: `${API_BASE_URL}/videos/yoga.mp4` }}
+                                style={{ width: "100%", height: "100%" }}
+                                resizeMode="cover"
+                                controls
+                                paused={false}
+                            />
+                        </View>
+                    )}
                 </View>
 
                 <View style={styles.infoContainer}>
-                    <Text style={styles.title}>{exercise.title}</Text>
+                    <Text style={styles.exerciseTitle}>{exercise.title}</Text>
                     <Text style={styles.description}>{exercise.description}</Text>
 
                     <View style={styles.detailsRow}>
@@ -105,42 +149,25 @@ const ExerciseDetailScreen = ({ route, navigation }) => {
                         <Text style={styles.detailText}>📈 Cấp độ: {exercise.level}</Text>
                     </View>
 
-                    {rounds.length > 0 && (
-                        <View style={{ marginTop: 20 }}>
-                            <Text style={styles.roundsTitle}>Các bước thực hiện:</Text>
-                            {rounds.map((r, i) => (
-                                <Text
-                                    key={r._id}
-                                    style={[
-                                        styles.roundText,
-                                        i === currentRoundIndex && isRunning && !isFinished && {
-                                            fontWeight: "700",
-                                            color: "#4ade80",
-                                        },
-                                    ]}
-                                >
-                                    {r.order}. {r.title} ({r.durationSec} giây)
-                                </Text>
-                            ))}
-                        </View>
-                    )}
+                    <View style={styles.roundsHeader}>
+                        <Text style={styles.roundsTitle}>Rounds</Text>
+                        <Text style={styles.roundsProgress}>
+                            {currentRoundIndex + 1}/{rounds.length}
+                        </Text>
+                    </View>
 
-                    {isRunning && !isFinished && (
-                        <View style={styles.countdownBox}>
-                            <Text style={styles.countdownLabel}>🕒 {currentRound?.title}</Text>
-                            <Text style={styles.countdownValue}>{countdown}s</Text>
-                        </View>
-                    )}
-
-                    {!isRunning && !isFinished && (
-                        <TouchableOpacity style={styles.completeButton} onPress={handleStart}>
-                            <Text style={styles.completeText}>▶️ Bắt đầu</Text>
-                        </TouchableOpacity>
-                    )}
+                    <FlatList
+                        ref={flatListRef}
+                        data={rounds}
+                        keyExtractor={(item) => item._id}
+                        renderItem={renderRoundItem}
+                        scrollEnabled={false}
+                        contentContainerStyle={{ paddingBottom: 20 }}
+                    />
 
                     {isFinished && (
-                        <TouchableOpacity style={styles.completeButton} onPress={() => navigation.goBack()}>
-                            <Text style={styles.completeText}>🔁 Quay về</Text>
+                        <TouchableOpacity style={styles.completeButton} onPress={handleComplete}>
+                            <Text style={styles.completeText}>✅ Hoàn thành & Lưu</Text>
                         </TouchableOpacity>
                     )}
                 </View>
@@ -152,81 +179,51 @@ const ExerciseDetailScreen = ({ route, navigation }) => {
 export default ExerciseDetailScreen;
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: "#fff",
+    safeArea: { flex: 1, backgroundColor: "#fff", marginTop: 20 },
+    headerRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 20,
+        marginTop: 10,
     },
-    backButton: {
-        position: "absolute",
-        top: 14,
-        left: 12,
-        zIndex: 10,
-    },
-    heading: {
-        fontSize: 20,
-        fontWeight: "700",
-        textAlign: "center",
-        marginTop: 18,
-    },
-    videoContainer: {
-        width: "90%",
+    headerTitle: { fontSize: 16, fontWeight: "700" },
+    previewContainer: { marginTop: 16, alignItems: "center" },
+    previewTouchable: { width: "90%", height: 200 },
+    previewImage: {
+        width: "100%",
         height: 200,
-        alignSelf: "center",
-        marginTop: 20,
-        borderRadius: 12,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 16,
         overflow: "hidden",
         backgroundColor: "#000",
     },
-    video: {
-        width: "100%",
-        height: "100%",
-    },
-    infoContainer: {
-        paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 30,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: "700",
-        marginBottom: 6,
-    },
-    description: {
-        fontSize: 13,
-        color: "#6b7280",
-        lineHeight: 20,
-    },
-    detailsRow: {
+    infoContainer: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 30 },
+    exerciseTitle: { fontSize: 18, fontWeight: "700", marginBottom: 6 },
+    description: { fontSize: 13, color: "#6b7280", lineHeight: 20 },
+    detailsRow: { marginTop: 20, gap: 10 },
+    detailText: { fontSize: 14, color: "#374151" },
+    roundsHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
         marginTop: 20,
-        gap: 10,
-    },
-    detailText: {
-        fontSize: 14,
-        color: "#374151",
-    },
-    roundsTitle: {
-        fontSize: 16,
-        fontWeight: "600",
         marginBottom: 8,
     },
-    roundText: {
-        fontSize: 14,
-        color: "#374151",
-        paddingVertical: 4,
-    },
-    countdownBox: {
-        marginTop: 30,
+    roundsTitle: { fontSize: 16, fontWeight: "600" },
+    roundsProgress: { fontSize: 14, color: "#6b7280" },
+    roundItem: {
+        flexDirection: "row",
         alignItems: "center",
+        backgroundColor: "#bfdbfe",
+        padding: 10,
+        borderRadius: 12,
+        marginBottom: 10,
     },
-    countdownLabel: {
-        fontSize: 16,
-        marginBottom: 6,
-    },
-    countdownValue: {
-        fontSize: 38,
-        fontWeight: "800",
-        color: "#facc15",
-    },
+    roundImage: { width: 50, height: 50 },
+    roundTitle: { fontSize: 14, fontWeight: "600" },
+    roundDuration: { fontSize: 12, color: "#6b7280" },
     completeButton: {
         marginTop: 30,
         backgroundColor: "#4ade80",
@@ -234,9 +231,5 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         alignItems: "center",
     },
-    completeText: {
-        color: "#fff",
-        fontWeight: "600",
-        fontSize: 16,
-    },
+    completeText: { color: "#fff", fontWeight: "600", fontSize: 16 },
 });

@@ -13,48 +13,30 @@ import {
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
+import { API_BASE_URL } from "../../redux/config";
 
 const ExerciseVideoScreen = ({ navigation }) => {
     const [search, setSearch] = useState("");
     const [exercises, setExercises] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [filteredExercises, setFilteredExercises] = useState([]);
     const [popular, setPopular] = useState([]);
-    const [topicList, setTopicList] = useState([]);
-    
-    useEffect(() => {
-        const fetchExercises = async () => {
-            try {
-                const res = await axios.get("http://192.168.0.105:3000/api/exercises");
-                // Thêm progress giả nếu chưa có từ backend
-                const withProgress = res.data.map(item => ({
-                    ...item,
-                    progress: Math.floor(Math.random() * 100)
-                }));
-                setExercises(withProgress);
-            } catch (err) {
-                console.error("Lỗi khi tải dữ liệu:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const [loading, setLoading] = useState(true);
 
-        fetchExercises();
-    }, []);
     useEffect(() => {
         const fetchExercises = async () => {
             try {
-                const res = await axios.get("http://192.168.0.105:3000/api/exercises");
+                const res = await axios.get(`${API_BASE_URL}/exercises`);
                 const dataWithProgress = res.data.map(item => ({
                     ...item,
                     progress: Math.floor(Math.random() * 100)
                 }));
+                setExercises(dataWithProgress);
+                setFilteredExercises(dataWithProgress);
 
-                // Phổ biến: ví dụ chọn calories >= 100
-                const popularItems = dataWithProgress.filter(item => item.calories >= 100).slice(0, 3);
-                const topicItems = dataWithProgress;
-
+                const popularItems = dataWithProgress
+                    .filter(item => item.calories >= 100)
+                    .slice(0, 3);
                 setPopular(popularItems);
-                setTopicList(topicItems);
             } catch (err) {
                 console.error("Lỗi khi tải dữ liệu:", err);
             } finally {
@@ -64,18 +46,25 @@ const ExerciseVideoScreen = ({ navigation }) => {
 
         fetchExercises();
     }, []);
-    
 
-    const filteredExercises = exercises.filter(item =>
-        item.title.toLowerCase().includes(search.toLowerCase())
-    );
+    useEffect(() => {
+        const filtered = exercises.filter(item =>
+            item.title.toLowerCase().includes(search.toLowerCase())
+        );
+        setFilteredExercises(filtered);
+    }, [search, exercises]);
 
     const handlePressExercise = (exercise) => {
         navigation.navigate("ExerciseDetailScreen", { exercise });
     };
-    const PopularCard = ({ item, onPress }) => (
-        <TouchableOpacity activeOpacity={0.8} onPress={() => onPress(item)}>
-            <ImageBackground source={{ uri: item.imageUrl }} style={styles.popularCard} imageStyle={{ borderRadius: 14 }}>
+
+    const PopularCard = ({ item }) => (
+        <TouchableOpacity activeOpacity={0.8} onPress={() => handlePressExercise(item)}>
+            <ImageBackground
+                source={{ uri: item.imageUrl }}
+                style={styles.popularCard}
+                imageStyle={{ borderRadius: 14 }}
+            >
                 <View style={styles.popularOverlay} />
                 <Text style={styles.popularTitle}>{item.title}</Text>
                 <View style={styles.popularInfoRow}>
@@ -88,9 +77,14 @@ const ExerciseVideoScreen = ({ navigation }) => {
             </ImageBackground>
         </TouchableOpacity>
     );
-    const TopicItem = ({ item, onPress }) => (
-        <TouchableOpacity style={styles.topicItem} activeOpacity={0.8} onPress={() => onPress(item)}>
-            <ImageBackground source={{ uri: item.imageUrl }} style={styles.topicImage} imageStyle={{ borderRadius: 12 }} />
+
+    const TopicItem = ({ item }) => (
+        <TouchableOpacity style={styles.topicItem} activeOpacity={0.8} onPress={() => handlePressExercise(item)}>
+            <ImageBackground
+                source={{ uri: item.imageUrl }}
+                style={styles.topicImage}
+                imageStyle={{ borderRadius: 12 }}
+            />
             <View style={styles.topicContent}>
                 <View style={styles.topicHeaderRow}>
                     <Text style={styles.topicTitle}>{item.title}</Text>
@@ -105,7 +99,7 @@ const ExerciseVideoScreen = ({ navigation }) => {
             </View>
         </TouchableOpacity>
     );
-    
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="dark-content" />
@@ -116,31 +110,31 @@ const ExerciseVideoScreen = ({ navigation }) => {
                 <Text style={styles.headerTitle}>Video Bài Tập</Text>
                 <View style={{ width: 24 }} />
             </View>
+
             <View style={styles.searchContainer}>
                 <Ionicons name="search" size={18} color="#9ca3af" style={{ marginLeft: 8 }} />
                 <TextInput
-                    placeholder="Search"
+                    placeholder="Tìm kiếm..."
                     placeholderTextColor="#9ca3af"
                     style={styles.searchInput}
                     value={search}
                     onChangeText={setSearch}
                 />
             </View>
+
             <Text style={styles.sectionTitle}>Phổ biến</Text>
             <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={popular}
                 keyExtractor={(item) => item._id}
-                renderItem={({ item }) => (
-                    <PopularCard item={item} onPress={() => navigation.navigate('ExerciseDetailScreen', { exercise: item })} />
-                )}
+                renderItem={({ item }) => <PopularCard item={item} />}
                 contentContainerStyle={{ paddingHorizontal: 20 }}
                 style={{ marginBottom: 10 }}
             />
 
             {loading ? (
-                <ActivityIndicator size="large" color="#4ade80" style={{ marginTop: 30 }} />
+                <ActivityIndicator size="large" color="#4ade80" style={{ marginTop: 10 }} />
             ) : (
                 <>
                     <Text style={styles.sectionTitle}>Danh sách bài tập</Text>
@@ -152,9 +146,7 @@ const ExerciseVideoScreen = ({ navigation }) => {
                         <FlatList
                             data={filteredExercises}
                             keyExtractor={(item) => item._id}
-                            renderItem={({ item }) => (
-                                <TopicItem item={item} onPress={handlePressExercise} />
-                            )}
+                            renderItem={({ item }) => <TopicItem item={item} />}
                             contentContainerStyle={{ paddingBottom: 30 }}
                             showsVerticalScrollIndicator={false}
                         />
@@ -166,11 +158,10 @@ const ExerciseVideoScreen = ({ navigation }) => {
 };
 
 export default ExerciseVideoScreen;
-
 const styles = StyleSheet.create({
     popularCard: {
-        width: 240,
-        height: 150,
+        width: 300,
+        height: 200,
         marginRight: 16,
         borderRadius: 14,
         overflow: "hidden",
@@ -240,7 +231,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 10,
     },
-    // Topic item
     topicItem: {
         flexDirection: "row",
         marginHorizontal: 20,
