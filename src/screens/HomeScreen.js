@@ -84,14 +84,6 @@ const HomeScreen = ({navigation}) => {
           <Text style={styles.statValue}>510.43</Text>
           <Text style={styles.kcal}>Kcal</Text>
         </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statTitle}>Walk</Text>
-          <View style={styles.circlePlaceholder}>
-            <Text style={{ textAlign: 'center', color: '#4DB4E5' }}>
-              2628{"\n"}Steps
-            </Text>
-          </View>
-        </View>
       </View>
 
       <Text style={styles.sectionTitle}>Exercise</Text>
@@ -181,32 +173,7 @@ const styles = StyleSheet.create({
   exerciseInfo: { marginLeft: 10, flex: 1 },
   exerciseTitle: { fontSize: 16, fontWeight: 'bold' },
   exerciseSubtitle: { color: 'gray', fontSize: 12, marginBottom: 4 },
-  
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
-
-const HomeScreen = ({navigation}) => {
-  return (
-    <View>
-      <Text>HomeScreen</Text>
-       <TouchableOpacity
-        style={{ marginTop: 220, width: 40, height: 40, backgroundColor: '#3BB3FD', alignItems: 'center', justifyContent: 'center', borderRadius: 8 }}
-        onPress={() => navigation.navigate('MusicListScreen')}
-      >
-        <Text style={{ color: '#fff' }}>Go</Text>
-      </TouchableOpacity>
-    </View>
-  )
-}
-
-
-  levelTag: {
-    backgroundColor: '#7BC9F2',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 5,
-  },
-  levelText: { color: '#fff', fontSize: 12 },
-});
+})
 
 export default HomeScreen;
+  

@@ -38,13 +38,17 @@ export default function MainNav() {
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Onboarding" component={OnBoardingScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
-
-        <Stack.Screen name="Register" component={RegisterScreen}/>
         <Stack.Screen name="Bmi" component={BmiScreen}/>
         <Stack.Screen name="AddBMI" component={AddBmiScreen}/>
         <Stack.Screen name="Notification" component={NotificationScreen}
-        options={{
-
+         options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: '',
+            headerBackTitleVisible: false,
+            headerTintColor: '#000000',
+          }}
+            /> 
         <Stack.Screen name="Register" component={RegisterScreen}
           options={{
             headerShown: true,
