@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-
+import { SONG_URL } from '../redux/config';
 export default function MusicListScreen() {
   const [songs, setSongs] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -10,7 +10,7 @@ export default function MusicListScreen() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    axios.get('http://192.168.1.138:3000/songs/song')
+    axios.get(SONG_URL)
       .then(res => {
         setSongs(res.data.data);
         setFiltered(res.data.data);
