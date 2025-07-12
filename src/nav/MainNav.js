@@ -30,7 +30,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 import DiaryScreen from '../screens/DiaryScreen';
 import DiaryEntryScreen from '../screens/DiaryEntryScreen';
-
+import DetailScreen from '../screens/DetailProfileScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -47,7 +47,8 @@ export default function MainNav() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Bmi" component={BmiScreen}/>
         <Stack.Screen name="AddBMI" component={AddBmiScreen}/>
-        <Stack.Screen name="Notification" component={NotificationScreen}
+        <Stack.Screen name="Notification" component={NotificationScreen}/>
+        <Stack.Screen name="DetailProfile" component={DetailScreen}
          options={{
             headerShown: true,
             headerTransparent: true,
