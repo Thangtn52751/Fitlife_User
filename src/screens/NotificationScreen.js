@@ -8,37 +8,51 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NotificationScreen = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchNotifications = async () => {
-    try {
-      const response = await fetch(
-        'http://10.0.2.2:3000/api/notifications/user/665f1234abcde6789abcde12'
-      );
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setNotifications(data);
-      } else {
-        setNotifications([]);
-      }
-    } catch (err) {
-      console.error('Error fetching notifications:', err);
+  try {
+    const token = await AsyncStorage.getItem('userToken');
+    console.log('Token:', token);
+
+    const response = await fetch('http://10.0.2.2:3000/api/notifications/user', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    console.log('Fetched notifications:', data); // ✅ Thêm dòng này
+
+    if (Array.isArray(data)) {
+      setNotifications(data);
+    } else {
       setNotifications([]);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    console.error('Error fetching notifications:', err);
+    setNotifications([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchNotifications();
   }, []);
 
   const renderItem = (item, index) => {
-    const isToday = new Date(item.sentAt).toDateString() === new Date().toDateString();
-    const time = new Date(item.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const time = new Date(item.sentAt).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
     return (
       <View key={index} style={styles.card}>
@@ -94,7 +108,6 @@ const NotificationScreen = () => {
               {yesterdayNotifications.map(renderItem)}
             </>
           )}
-
           {todayNotifications.length > 0 && (
             <>
               <Text style={styles.dateLabel}>Hôm Nay</Text>

@@ -13,48 +13,68 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuth } from '../redux/actions/authActions';
 import { AUTH_URL } from '../redux/config';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // ✅ Thêm import này
 
 const { width } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
-  const [password, setPassword]= useState('');
-  const [hidePass, setHidePass]= useState(true);
+  const [password, setPassword] = useState('');
+  const [hidePass, setHidePass] = useState(true);
 
   const dispatch = useDispatch();
-  const { user } = useSelector(s => s.auth);
+  const { user, token } = useSelector(state => state.auth);
 
   useEffect(() => {
-    if (user) navigation.replace('Home');
-  }, [user]);
+    if (user && token) {
+      console.log('🔐 Token sau khi login:', token);
+      navigation.replace('Home');
+    }
+  }, [user, token]);
 
   const onLogin = async () => {
-    if (!email.trim() || !password) {
-      return Alert.alert('Validation', 'Please enter your email and password.');
-    }
-    try {
-      const res = await fetch(`${AUTH_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || 'Login failed');
-      dispatch(setAuth(json.data.user, json.data.token));
-    } catch (err) {
-      Alert.alert('Error', err.message);
-    }
-  };
+  if (!email.trim() || !password) {
+    return Alert.alert('Validation', 'Please enter your email and password.');
+  }
+
+  try {
+    const res = await fetch(`${AUTH_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.trim(),
+        password: password,
+      }),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok) throw new Error(json.message || 'Login failed');
+
+    const { user, token } = json.data;
+
+    if (!token) throw new Error('Không nhận được token từ server.');
+
+    console.log("✅ Token nhận được:", token);
+
+    await AsyncStorage.setItem('userToken', token); // ✅ Lưu đúng key
+
+    dispatch(setAuth(user, token)); // ✅ Redux lưu
+
+  } catch (err) {
+    console.log("❌ Login error:", err);
+    Alert.alert('Error', err.message);
+  }
+};
+
 
   return (
     <View style={styles.container}>
       <View style={styles.headerBg} />
-
       <View style={styles.content}>
         <Text style={styles.title}>Sign in</Text>
         <Text style={styles.subtitle}>Welcome back</Text>
 
-  
         <View style={styles.inputRow}>
           <Ionicons name="mail-outline" size={20} color="#666" />
           <TextInput
@@ -67,7 +87,6 @@ export default function LoginScreen({ navigation }) {
             onChangeText={setEmail}
           />
         </View>
-
 
         <View style={styles.inputRow}>
           <Ionicons name="lock-closed-outline" size={20} color="#666" />
@@ -88,17 +107,14 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-  
         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
 
-  
         <TouchableOpacity style={styles.button} onPress={onLogin}>
           <Text style={styles.buttonText}>Sign in</Text>
         </TouchableOpacity>
 
-     
         <View style={styles.switchRow}>
           <Text style={styles.switchText}>New member?</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
@@ -137,7 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: '#333',
-    marginTop:100
+    marginTop: 100,
   },
   subtitle: {
     fontSize: 14,
