@@ -95,3 +95,13 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+npm install react-native-maps ko dùng
+npm install react-native-maps --legacy-peer-deps
+adb reverse tcp:8081 tcp:8081
+npm install react-native-geolocation-service
+npm i axios
+npm install @reduxjs/toolkit react-redux
+npm install react-native-permissions
+npm install react-native-maps 
+
+
