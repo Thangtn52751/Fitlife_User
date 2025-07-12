@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -65,12 +66,18 @@ export default function OnboardingCarousel() {
     },
   });
 
-  const goNext = idx => {
+  const goNext = async (idx) => {
     if (idx < slides.length - 1) {
       scrollRef.current?.scrollTo({ x: width * (idx + 1), animated: true });
     } else {
+      await AsyncStorage.setItem('hasSeenOnboarding', 'true');
       navigation.replace('Login');
     }
+  };
+
+  const handleSkip = async () => {
+    await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+    navigation.replace('Login');
   };
 
   return (
@@ -86,10 +93,7 @@ export default function OnboardingCarousel() {
         {slides.map((s, i) => (
           <View style={styles.slide} key={s.key}>
             {i < slides.length - 1 && (
-              <TouchableOpacity
-                style={styles.skipBtn}
-                onPress={() => navigation.replace('Login')}
-              >
+              <TouchableOpacity style={styles.skipBtn} onPress={handleSkip}>
                 <Text style={styles.skipTxt}>Skip</Text>
               </TouchableOpacity>
             )}

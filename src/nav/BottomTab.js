@@ -1,14 +1,21 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from '../screens/HomeScreen';
+
 import AnalysisScreen from '../screens/AnalysisScreen.js';
 import ActivityScreen from '../screens/ActivityScreen.js';
 import MeditationScreen from '../screens/MeditationScreen.js';
 import ProfileScreen from '../screens/ProfileScreen.js';
 import ExerciseVideoScreen from '../screens/ExerciseScreen/ExerciseVideoScreen.js';
+
+import AnalysisScreen from '../screens/AnalysisScreen';
+import ActivityScreen from '../screens/ActivityScreen';
+import MeditationScreen from '../screens/MeditationScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -37,11 +44,10 @@ export default function TabNavigator() {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name="home-outline"
-              size={24}
-              color={focused ? '#4DA6FF' : '#666'}
-            />
+            <View style={styles.iconWrapper}>
+              <Ionicons name="home-outline" size={22} color={focused ? '#4DA6FF' : '#666'} />
+              <Text style={[styles.label, { color: focused ? '#4DA6FF' : '#666' }]}>Home</Text>
+            </View>
           ),
         }}
       />
@@ -51,11 +57,10 @@ export default function TabNavigator() {
         component={AnalysisScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name="bar-chart-outline"
-              size={24}
-              color={focused ? '#4DA6FF' : '#666'}
-            />
+            <View style={styles.iconWrapper}>
+              <Ionicons name="bar-chart-outline" size={22} color={focused ? '#4DA6FF' : '#666'} />
+              <Text style={[styles.label, { color: focused ? '#4DA6FF' : '#666' }]}>Analysis</Text>
+            </View>
           ),
         }}
       />
@@ -65,7 +70,7 @@ export default function TabNavigator() {
         component={ActivityScreen}
         options={{
           tabBarIcon: () => (
-            <Ionicons name="walk-outline" size={28} color="#fff" />
+            <Ionicons name="walk-outline" size={26} color="#fff" />
           ),
           tabBarButton: props => <CustomTabBarButton {...props} />,
         }}
@@ -76,11 +81,10 @@ export default function TabNavigator() {
         component={ExerciseVideoScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name="meditation-outline"
-              size={24}
-              color={focused ? '#4DA6FF' : '#666'}
-            />
+            <View style={styles.iconWrapper}>
+              <MaterialIcons name="meditation" size={22} color={focused ? '#4DA6FF' : '#666'} />
+              <Text style={[styles.label, { color: focused ? '#4DA6FF' : '#666' }]}>Meditation</Text>
+            </View>
           ),
         }}
       />
@@ -90,11 +94,10 @@ export default function TabNavigator() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name="person-outline"
-              size={24}
-              color={focused ? '#4DA6FF' : '#666'}
-            />
+            <View style={styles.iconWrapper}>
+              <Ionicons name="person-outline" size={22} color={focused ? '#4DA6FF' : '#666'} />
+              <Text style={[styles.label, { color: focused ? '#4DA6FF' : '#666' }]}>Profile</Text>
+            </View>
           ),
         }}
       />
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     height: 60,
     ...Platform.select({
-      ios: { shadowColor: '#000', shadowOpacity: 0.1, shadowOffset: { width:0, height: 5 }, shadowRadius:10 },
+      ios: { shadowColor: '#000', shadowOpacity: 0.1, shadowOffset: { width: 0, height: 5 }, shadowRadius: 10 },
       android: { elevation: 5 },
     }),
   },
@@ -130,8 +133,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     ...Platform.select({
-      ios: { shadowColor: '#4DA6FF', shadowOpacity: 0.3, shadowOffset: { width:0, height:10 }, shadowRadius:10 },
+      ios: { shadowColor: '#4DA6FF', shadowOpacity: 0.3, shadowOffset: { width: 0, height: 10 }, shadowRadius: 10 },
       android: { elevation: 5 },
     }),
+  },
+  iconWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  label: {
+    fontSize: 10,
+    marginTop: 2,
   },
 });
