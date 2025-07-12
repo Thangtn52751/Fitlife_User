@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // <-- cần thêm dòng này
 
 const AddBmiScreen = ({ navigation }) => {
   const [weight, setWeight] = useState('');
@@ -40,7 +41,6 @@ const AddBmiScreen = ({ navigation }) => {
     const bmi = parseFloat(calculateBmi());
     const status = getStatus(bmi);
     const time = formatDate();
-    const userId = '665f1234abcde6789abcde12'; // bạn có thể truyền từ redux/context sau
 
     if (!weight || !height || parseFloat(weight) <= 0 || parseFloat(height) <= 0) {
       Alert.alert('Thiếu thông tin', 'Vui lòng nhập cân nặng và chiều cao hợp lệ');
@@ -48,11 +48,20 @@ const AddBmiScreen = ({ navigation }) => {
     }
 
     try {
+      // 🔐 Lấy token từ AsyncStorage
+      const token = await AsyncStorage.getItem('userToken');
+      if (!token) {
+        Alert.alert('Lỗi xác thực', 'Không tìm thấy token người dùng. Hãy đăng nhập lại.');
+        return;
+      }
+
       const res = await fetch('http://10.0.2.2:3000/api/bmi', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // <-- Gửi token như trong Postman
+        },
         body: JSON.stringify({
-          userId,
           weight: parseFloat(weight),
           height: parseFloat(height),
           bmiValue: bmi,
@@ -65,7 +74,9 @@ const AddBmiScreen = ({ navigation }) => {
         Alert.alert('Thành công', 'Đã thêm chỉ số BMI');
         navigation.goBack();
       } else {
-        Alert.alert('Lỗi', 'Không thể gửi dữ liệu BMI');
+        const data = await res.json();
+        console.log('Lỗi server:', data);
+        Alert.alert('Lỗi', data.message || 'Không thể gửi dữ liệu BMI');
       }
     } catch (error) {
       console.error('Lỗi gửi BMI:', error);

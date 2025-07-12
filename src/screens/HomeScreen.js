@@ -9,66 +9,73 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useSelector } from 'react-redux';
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation }) => {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [bmi, setBmi] = useState(null);
 
-  const fetchExercises = async () => {
-    try {
-      const response = await fetch('http://10.0.2.2:3000/api/exercises');
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setExercises(data);
-      } else {
-        console.warn('Dữ liệu exercises không đúng định dạng:', data);
-        setExercises([]);
-      }
-    } catch (error) {
-      console.error('Lỗi khi lấy dữ liệu exercises:', error);
-      setExercises([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { user,token } = useSelector(state => state.auth);
 
-  const fetchBmi = async () => {
-    try {
-      const response = await fetch(
-        'http://10.0.2.2:3000/api/bmi/user/665f1234abcde6789abcde12'
-      );
-      const data = await response.json();
-      if (Array.isArray(data) && data.length > 0) {
-        setBmi(data[0].bmiValue);
-      } else {
-        console.warn('Không có dữ liệu BMI hợp lệ:', data);
-      }
-    } catch (error) {
-      console.error('Lỗi khi lấy dữ liệu BMI:', error);
-    }
-  };
+  
 
   useEffect(() => {
-    fetchExercises();
-    fetchBmi();
-  }, []);
+  const unsubscribe = navigation.addListener('focus', () => {
+    const hasUserId = user?.id || user?._id;
+    if (hasUserId) {
+      fetchExercises();
+      fetchBmi(); 
+    }
+  });
+
+  return unsubscribe; 
+}, [navigation, user]);
+
+
+
+const fetchBmi = async () => {
+  console.log('📌 Gọi hàm fetchBmi');
+  try {
+    const response = await fetch('http://10.0.2.2:3000/api/bmi/user', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('📥 BMI response status:', response.status);
+
+    const data = await response.json();
+    console.log('📊 BMI data:', data);
+
+    if (Array.isArray(data) && data.length > 0) {
+      const sorted = data.sort((a, b) => new Date(b.recordDate) - new Date(a.recordDate));
+      console.log('✅ BMI sau sắp xếp:', sorted[0]);
+      setBmi(sorted[0].bmiValue);
+    } else {
+      console.warn('⚠️ Không có dữ liệu BMI hợp lệ:', data);
+    }
+  } catch (error) {
+    console.error('❌ Lỗi khi lấy dữ liệu BMI:', error);
+  }
+};
+
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          <Image
-            source={require('../img/image98.png')}
-            style={styles.avatar}
-          />
-          <Text style={styles.username}>Nguyễn Thanh Bình</Text>
+          {user?.image ? (
+            <Image source={{ uri: user.image || require('../assets/logo.png') }} style={styles.avatar} />
+          ) : null}
+          <Text style={styles.username}>{user?.fullName || 'Chưa có tên'}</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Notification')}>
-  <Icon name="notifications-outline" size={24} color="black" />
-</TouchableOpacity>
 
+        <TouchableOpacity onPress={() => navigation.navigate('Notification')}>
+          <Icon name="notifications-outline" size={24} color="black" />
+        </TouchableOpacity>
       </View>
       <View style={styles.statsContainer}>
         <View style={styles.statBox}>
@@ -88,7 +95,7 @@ const HomeScreen = ({navigation}) => {
 
       {loading ? (
         <ActivityIndicator size="large" color="#4DB4E5" />
-      ) : Array.isArray(exercises) && exercises.length > 0 ? (
+      ) : exercises.length > 0 ? (
         exercises.map((item) => (
           <View key={item._id} style={styles.exerciseCard}>
             <Image
@@ -101,7 +108,9 @@ const HomeScreen = ({navigation}) => {
               <Text style={styles.exerciseSubtitle}>
                 ⏱ {item.durationMin} min • 🔥 {item.calories} Kcal
               </Text>
-              <Text style={styles.exerciseSubtitle}>🎬 {item.videoUrl}</Text>
+              {item.videoUrl ? (
+                <Text style={styles.exerciseSubtitle}>🎬 {item.videoUrl}</Text>
+              ) : null}
             </View>
             <View style={styles.levelTag}>
               <Text style={styles.levelText}>{item.level}</Text>
@@ -143,17 +152,6 @@ const styles = StyleSheet.create({
   statValue: { fontSize: 18, color: '#4DB4E5' },
   kcal: { fontSize: 12, color: 'gray' },
 
-  circlePlaceholder: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 5,
-    borderColor: '#4DB4E5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#E0F0FA',
-  },
-
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -171,7 +169,16 @@ const styles = StyleSheet.create({
   exerciseInfo: { marginLeft: 10, flex: 1 },
   exerciseTitle: { fontSize: 16, fontWeight: 'bold' },
   exerciseSubtitle: { color: 'gray', fontSize: 12, marginBottom: 4 },
-})
+  levelTag: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#4DB4E5',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  levelText: { color: 'white', fontSize: 10 },
+});
 
 export default HomeScreen;
-  

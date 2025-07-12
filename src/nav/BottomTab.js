@@ -5,22 +5,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from '../screens/HomeScreen';
 import AnalysisScreen from '../screens/AnalysisScreen';
-import ActivityScreen from '../screens/ActivityScreen';
 import MeditationScreen from '../screens/MeditationScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
-const CustomTabBarButton = ({ children, onPress }) => (
-  <TouchableOpacity
-    style={styles.customButtonContainer}
-    onPress={onPress}
-  >
-    <View style={styles.customButton}>
-      {children}
-    </View>
-  </TouchableOpacity>
-);
+
 
 export default function TabNavigator() {
   return (
@@ -38,7 +28,6 @@ export default function TabNavigator() {
           tabBarIcon: ({ focused }) => (
             <View style={styles.iconWrapper}>
               <Ionicons name="home-outline" size={22} color={focused ? '#4DA6FF' : '#666'} />
-              <Text style={[styles.label, { color: focused ? '#4DA6FF' : '#666' }]}>Home</Text>
             </View>
           ),
         }}
@@ -51,22 +40,11 @@ export default function TabNavigator() {
           tabBarIcon: ({ focused }) => (
             <View style={styles.iconWrapper}>
               <Ionicons name="bar-chart-outline" size={22} color={focused ? '#4DA6FF' : '#666'} />
-              <Text style={[styles.label, { color: focused ? '#4DA6FF' : '#666' }]}>Analysis</Text>
             </View>
           ),
         }}
       />
 
-      <Tab.Screen
-        name="Activity"
-        component={ActivityScreen}
-        options={{
-          tabBarIcon: () => (
-            <Ionicons name="walk-outline" size={26} color="#fff" />
-          ),
-          tabBarButton: props => <CustomTabBarButton {...props} />,
-        }}
-      />
 
       <Tab.Screen
         name="Meditation"
@@ -74,8 +52,7 @@ export default function TabNavigator() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={styles.iconWrapper}>
-              <MaterialIcons name="meditation" size={22} color={focused ? '#4DA6FF' : '#666'} />
-              <Text style={[styles.label, { color: focused ? '#4DA6FF' : '#666' }]}>Meditation</Text>
+              <Ionicons name="bookmarks-outline" size={22} color={focused ? '#4DA6FF' : '#666'} />
             </View>
           ),
         }}
@@ -88,7 +65,6 @@ export default function TabNavigator() {
           tabBarIcon: ({ focused }) => (
             <View style={styles.iconWrapper}>
               <Ionicons name="person-outline" size={22} color={focused ? '#4DA6FF' : '#666'} />
-              <Text style={[styles.label, { color: focused ? '#4DA6FF' : '#666' }]}>Profile</Text>
             </View>
           ),
         }}
@@ -100,13 +76,14 @@ export default function TabNavigator() {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    bottom: Platform.OS === 'android' ? 12 : 24,
-    left: 24,
-    right: 24,
-    elevation: 0,
+    elevation: 1,
     backgroundColor: '#fff',
-    borderRadius: 30,
     height: 60,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 10,
+    borderTopWidth: 0.9,
     ...Platform.select({
       ios: { shadowColor: '#000', shadowOpacity: 0.1, shadowOffset: { width: 0, height: 5 }, shadowRadius: 10 },
       android: { elevation: 5 },
