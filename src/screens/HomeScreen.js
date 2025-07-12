@@ -70,8 +70,6 @@ const HomeScreen = ({navigation}) => {
 </TouchableOpacity>
 
       </View>
-
-      {/* Stats */}
       <View style={styles.statsContainer}>
         <View style={styles.statBox}>
           <Text style={styles.statTitle}>BMI</Text>
