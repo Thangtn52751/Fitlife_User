@@ -25,6 +25,13 @@ import WaterHistory from '../screens/WaterHistory';
 
 import MusicListScreen from '../screens/MusicListScreen';
 import PlayerScreen from '../screens/PlayMusic';
+import DairyScreen from '../screens/DiaryScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
+import DiaryScreen from '../screens/DiaryScreen';
+import DiaryEntryScreen from '../screens/DiaryEntryScreen';
+import DetailScreen from '../screens/DetailProfileScreen';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -38,13 +45,18 @@ export default function MainNav() {
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Onboarding" component={OnBoardingScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
-
-        <Stack.Screen name="Register" component={RegisterScreen}/>
         <Stack.Screen name="Bmi" component={BmiScreen}/>
         <Stack.Screen name="AddBMI" component={AddBmiScreen}/>
-        <Stack.Screen name="Notification" component={NotificationScreen}
-        options={{
-
+        <Stack.Screen name="Notification" component={NotificationScreen}/>
+        <Stack.Screen name="DetailProfile" component={DetailScreen}
+         options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: '',
+            headerBackTitleVisible: false,
+            headerTintColor: '#000000',
+          }}
+            /> 
         <Stack.Screen name="Register" component={RegisterScreen}
           options={{
             headerShown: true,
@@ -91,7 +103,15 @@ export default function MainNav() {
            <Stack.Screen name="WaterHistory" component={WaterHistory} options={{ headerShown: false}}/>
         <Stack.Screen name='MusicListScreen' component={MusicListScreen}/>
         <Stack.Screen name='PlayerScreen' component={PlayerScreen}/>
+        
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+
+             <Stack.Screen name="DiaryScreen" component={DiaryScreen} />
+        <Stack.Screen name="DiaryEntry" component={DiaryEntryScreen} />
+
+        
       </Stack.Navigator>
     </NavigationContainer>
-  );
+  );S
 }
