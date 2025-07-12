@@ -1,12 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { WebView } from 'react-native-webview';
-
+import { API_SONG_URL } from '../redux/config';
 const { width } = Dimensions.get('window');
 
 export default function PlayerScreen({ route, navigation }) {
   const { song } = route.params;
-  const audioUrl = "http://10.0.2.2:3000" + song.audio;
+  const audioUrl = API_SONG_URL + song.audio;
   const webviewRef = useRef(null);
 
   // State quản lý play/pause
