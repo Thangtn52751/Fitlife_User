@@ -15,6 +15,7 @@ import ActivityScreen from '../screens/ActivityScreen';
 import HistoryActivityScreen from '../screens/HistoryActivityScreen';
 import ExerciseVideoScreen from '../screens/ExerciseScreen/ExerciseVideoScreen';
 import ExerciseDetailScreen from '../screens/ExerciseScreen/ExerciseDetailScreen';
+import ExerciseHistoryScreen from '../screens/ExerciseScreen/ExerciseHistoryScreen';
 const Stack = createNativeStackNavigator();
 
 export default function MainNav() {
@@ -68,6 +69,7 @@ export default function MainNav() {
         <Stack.Screen name="HistoryActivityScreen" component={HistoryActivityScreen} />
         <Stack.Screen name="ExerciseVideoScreen" component={ExerciseVideoScreen} />
         <Stack.Screen name="ExerciseDetailScreen" component={ExerciseDetailScreen} />
+        <Stack.Screen name="ExerciseHistoryScreen" component={ExerciseHistoryScreen} />
         </Stack.Navigator>
     </NavigationContainer>
   );

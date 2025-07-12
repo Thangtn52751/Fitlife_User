@@ -25,21 +25,29 @@ function calculateDistance(prev, curr) {
 
 export const stepReducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'tracking/start':
+        case 'tracking/start': {
+            const resume = action.payload?.resume;
+            const hasValidResumeData = resume && state.locations.length > 0 && state.startTime;
             return {
                 ...state,
                 isTracking: true,
-                locations: [],
-                distance: 0,
-                steps: 0,
-                calories: 0,
-                startTime: new Date(),
+                locations: hasValidResumeData ? state.locations : [],
+                distance: hasValidResumeData ? state.distance : 0,
+                steps: hasValidResumeData ? state.steps : 0,
+                calories: hasValidResumeData ? state.calories : 0,
+                startTime: hasValidResumeData ? state.startTime : new Date(),
             };
+        }
 
         case 'tracking/stop':
             return {
                 ...state,
                 isTracking: false,
+            };
+
+        case 'tracking/reset':
+            return {
+                ...initialState,
             };
 
         case 'tracking/updateLocation': {
@@ -61,4 +69,3 @@ export const stepReducer = (state = initialState, action) => {
             return state;
     }
 };
-  

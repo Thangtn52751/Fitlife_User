@@ -1,285 +1,215 @@
 import React, { useState, useEffect } from "react";
 import {
-    View,
-    Text,
-    StyleSheet,
-    SafeAreaView,
-    FlatList,
-    ImageBackground,
-    TouchableOpacity,
-    TextInput,
-    StatusBar,
-    ActivityIndicator
+  View, Text, StyleSheet, SafeAreaView, FlatList,
+  ImageBackground, TouchableOpacity, TextInput,
+  StatusBar, ActivityIndicator
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import axios from "axios";
-import { API_BASE_URL } from "../../redux/config";
+import { fetchYouTubeExercises } from "./service/youtubeService";
 
 const ExerciseVideoScreen = ({ navigation }) => {
-    const [search, setSearch] = useState("");
-    const [exercises, setExercises] = useState([]);
-    const [filteredExercises, setFilteredExercises] = useState([]);
-    const [popular, setPopular] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [exercises, setExercises] = useState([]);
+  const [filteredExercises, setFilteredExercises] = useState([]);
+  const [popular, setPopular] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchExercises = async () => {
-            try {
-                const res = await axios.get(`${API_BASE_URL}/exercises`);
-                const dataWithProgress = res.data.map(item => ({
-                    ...item,
-                    progress: Math.floor(Math.random() * 100)
-                }));
-                setExercises(dataWithProgress);
-                setFilteredExercises(dataWithProgress);
-
-                const popularItems = dataWithProgress
-                    .filter(item => item.calories >= 100)
-                    .slice(0, 3);
-                setPopular(popularItems);
-            } catch (err) {
-                console.error("Lỗi khi tải dữ liệu:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchExercises();
-    }, []);
-
-    useEffect(() => {
-        const filtered = exercises.filter(item =>
-            item.title.toLowerCase().includes(search.toLowerCase())
-        );
-        setFilteredExercises(filtered);
-    }, [search, exercises]);
-
-    const handlePressExercise = (exercise) => {
-        navigation.navigate("ExerciseDetailScreen", { exercise });
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchYouTubeExercises("cardio tại nhà");
+      const withProgress = data.map(item => ({
+        ...item,
+        progress: Math.floor(Math.random() * 100)
+      }));
+      setExercises(withProgress);
+      setFilteredExercises(withProgress);
+      setPopular(withProgress.slice(0, 3));
+      setLoading(false);
     };
+    fetchData();
+  }, []);
 
-    const PopularCard = ({ item }) => (
-        <TouchableOpacity activeOpacity={0.8} onPress={() => handlePressExercise(item)}>
-            <ImageBackground
-                source={{ uri: item.imageUrl }}
-                style={styles.popularCard}
-                imageStyle={{ borderRadius: 14 }}
-            >
-                <View style={styles.popularOverlay} />
-                <Text style={styles.popularTitle}>{item.title}</Text>
-                <View style={styles.popularInfoRow}>
-                    <Ionicons name="flame-outline" size={14} color="#fff" />
-                    <Text style={styles.popularInfoText}>{item.calories} Kcal</Text>
-                    <Ionicons name="time-outline" size={14} color="#fff" style={{ marginLeft: 8 }} />
-                    <Text style={styles.popularInfoText}>{item.durationMin} Min</Text>
-                </View>
-                <Ionicons name="play-circle" size={38} color="#4ade80" style={styles.playIcon} />
-            </ImageBackground>
+  useEffect(() => {
+    const filtered = exercises.filter(item =>
+      item.title.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredExercises(filtered);
+  }, [search]);
+
+  const handlePressExercise = (exercise) => {
+    navigation.navigate("ExerciseDetailScreen", { exercise });
+  };
+
+  const PopularCard = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => handlePressExercise(item)}
+      activeOpacity={0.9}
+      style={styles.popularCardWrapper}
+    >
+      <ImageBackground source={{ uri: item.imageUrl }} style={styles.popularCard}>
+        <View style={styles.overlay} />
+        <Text style={styles.popularTitle} numberOfLines={2}>{item.title}</Text>
+        <Ionicons name="play-circle" size={42} color="#22c55e" style={styles.playIcon} />
+      </ImageBackground>
+    </TouchableOpacity>
+  );
+
+  const TopicItem = ({ item }) => (
+    <TouchableOpacity style={styles.topicItem} onPress={() => handlePressExercise(item)}>
+      <ImageBackground source={{ uri: item.imageUrl }} style={styles.topicImage} imageStyle={{ borderRadius: 12 }} />
+      <View style={styles.topicContent}>
+        <Text style={styles.topicTitle} numberOfLines={2}>{item.title}</Text>
+        <Text numberOfLines={2} style={styles.topicSubtitle}>{item.description}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f9fafb" }}>
+      <StatusBar barStyle="dark-content" />
+      <View style={styles.headerRow}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={26} color="#111827" />
         </TouchableOpacity>
-    );
+        <Text style={styles.headerTitle}>📺 Video Bài Tập</Text>
+        <View style={{ width: 26 }} />
+      </View>
 
-    const TopicItem = ({ item }) => (
-        <TouchableOpacity style={styles.topicItem} activeOpacity={0.8} onPress={() => handlePressExercise(item)}>
-            <ImageBackground
-                source={{ uri: item.imageUrl }}
-                style={styles.topicImage}
-                imageStyle={{ borderRadius: 12 }}
-            />
-            <View style={styles.topicContent}>
-                <View style={styles.topicHeaderRow}>
-                    <Text style={styles.topicTitle}>{item.title}</Text>
-                    <View style={styles.levelBadge}>
-                        <Text style={styles.levelText}>{item.level}</Text>
-                    </View>
-                </View>
-                <Text style={styles.topicSubtitle}>{item.description}</Text>
-                <View style={styles.progressBarBg}>
-                    <View style={[styles.progressBarFill, { width: `${item.progress || 50}%` }]} />
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={18} color="#9ca3af" />
+        <TextInput
+          placeholder="Tìm kiếm bài tập..."
+          value={search}
+          onChangeText={setSearch}
+          placeholderTextColor="#9ca3af"
+          style={styles.searchInput}
+        />
+      </View>
 
-    return (
-        <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="dark-content" />
-            <View style={styles.headerRow}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="chevron-back" size={24} color="#000" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Video Bài Tập</Text>
-                <View style={{ width: 24 }} />
-            </View>
+      <Text style={styles.sectionTitle}>🔥 Phổ biến</Text>
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={popular}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => <PopularCard item={item} />}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+      />
 
-            <View style={styles.searchContainer}>
-                <Ionicons name="search" size={18} color="#9ca3af" style={{ marginLeft: 8 }} />
-                <TextInput
-                    placeholder="Tìm kiếm..."
-                    placeholderTextColor="#9ca3af"
-                    style={styles.searchInput}
-                    value={search}
-                    onChangeText={setSearch}
-                />
-            </View>
-
-            <Text style={styles.sectionTitle}>Phổ biến</Text>
-            <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                data={popular}
-                keyExtractor={(item) => item._id}
-                renderItem={({ item }) => <PopularCard item={item} />}
-                contentContainerStyle={{ paddingHorizontal: 20 }}
-                style={{ marginBottom: 10 }}
-            />
-
-            {loading ? (
-                <ActivityIndicator size="large" color="#4ade80" style={{ marginTop: 10 }} />
-            ) : (
-                <>
-                    <Text style={styles.sectionTitle}>Danh sách bài tập</Text>
-                    {filteredExercises.length === 0 ? (
-                        <Text style={{ textAlign: 'center', marginTop: 20, color: '#9ca3af' }}>
-                            Không tìm thấy kết quả
-                        </Text>
-                    ) : (
-                        <FlatList
-                            data={filteredExercises}
-                            keyExtractor={(item) => item._id}
-                            renderItem={({ item }) => <TopicItem item={item} />}
-                            contentContainerStyle={{ paddingBottom: 30 }}
-                            showsVerticalScrollIndicator={false}
-                        />
-                    )}
-                </>
-            )}
-        </SafeAreaView>
-    );
+      <Text style={styles.sectionTitle}>📂 Danh sách video</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#22c55e" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={filteredExercises}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => <TopicItem item={item} />}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 30 }}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+    </SafeAreaView>
+  );
 };
 
 export default ExerciseVideoScreen;
+
 const styles = StyleSheet.create({
-    popularCard: {
-        width: 300,
-        height: 200,
-        marginRight: 16,
-        borderRadius: 14,
-        overflow: "hidden",
-        justifyContent: "flex-end",
-        padding: 12,
-    },
-    popularOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: "rgba(0,0,0,0.35)",
-        borderRadius: 14,
-    },
-    popularTitle: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "600",
-    },
-    popularInfoRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginTop: 4,
-    },
-    popularInfoText: {
-        color: "#fff",
-        marginLeft: 4,
-        marginRight: 8,
-        fontSize: 12,
-    },
-    playIcon: {
-        position: "absolute",
-        right: 10,
-        bottom: 10,
-    },
-    safeArea: {
-        flex: 1,
-        backgroundColor: "#fff",
-        marginTop: 50
-    },
-    headerRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingHorizontal: 16,
-        marginTop: 4,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: "600",
-    },
-    searchContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#f3f4f6",
-        marginHorizontal: 16,
-        borderRadius: 12,
-        height: 42,
-        marginTop: 12,
-    },
-    searchInput: {
-        flex: 1,
-        marginLeft: 6,
-        fontSize: 14,
-    },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: "600",
-        marginHorizontal: 20,
-        marginTop: 20,
-        marginBottom: 10,
-    },
-    topicItem: {
-        flexDirection: "row",
-        marginHorizontal: 20,
-        marginBottom: 18,
-    },
-    topicImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 12,
-    },
-    topicContent: {
-        flex: 1,
-        marginLeft: 12,
-        justifyContent: "center",
-    },
-    topicHeaderRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-    topicTitle: {
-        fontSize: 16,
-        fontWeight: "600",
-    },
-    levelBadge: {
-        backgroundColor: "#e0f2ff",
-        borderRadius: 6,
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-    },
-    levelText: {
-        fontSize: 10,
-        color: "#0ea5e9",
-        fontWeight: "500",
-    },
-    topicSubtitle: {
-        color: "#6b7280",
-        fontSize: 12,
-        marginTop: 2,
-    },
-    progressBarBg: {
-        height: 6,
-        backgroundColor: "#e5e7eb",
-        borderRadius: 4,
-        marginTop: 8,
-    },
-    progressBarFill: {
-        height: 6,
-        backgroundColor: "#a3e635",
-        borderRadius: 4,
-    },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 18,
+    paddingBottom: 10,
+    alignItems: 'center',
+    backgroundColor: '#fff'
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827'
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#f1f5f9',
+    marginHorizontal: 16,
+    marginVertical: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    height: 44
+  },
+  searchInput: {
+    marginLeft: 8,
+    flex: 1,
+    color: '#111827',
+    fontSize: 14
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 12,
+    marginBottom: 8,
+    paddingHorizontal: 16,
+    color: '#111827'
+  },
+  popularCardWrapper: {
+    marginRight: 16
+  },
+  popularCard: {
+    width: 280,
+    height: 160,
+    borderRadius: 14,
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
+    padding: 12,
+    marginBottom: 120
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  popularTitle: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 15
+  },
+  playIcon: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12
+  },
+  topicItem: {
+    flexDirection: 'row',
+    marginBottom: 14,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2
+  },
+  topicImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    backgroundColor: '#e5e7eb'
+  },
+  topicContent: {
+    flex: 1,
+    marginLeft: 12,
+    justifyContent: 'center'
+  },
+  topicTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1f2937'
+  },
+  topicSubtitle: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 4
+  }
 });

@@ -8,7 +8,7 @@ import { API_BASE_URL } from '../redux/config';
 const HistoryActivityScreen = () => {
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
-    const user = useSelector(state => state.auth.user); // ✅ Sửa chỗ này
+    const user = useSelector(state => state.auth.user); 
 
     useEffect(() => {
         if (!user || !user._id) {
@@ -19,7 +19,7 @@ const HistoryActivityScreen = () => {
         const fetchHistory = async () => {
             try {
                 const [runRes, stepRes] = await Promise.all([
-                    axios.get(`${API_BASE_URL}/runs/${user._id}`), // ✅ Sửa user._id
+                    axios.get(`${API_BASE_URL}/runs/${user._id}`),
                     axios.get(`${API_BASE_URL}/steps/${user._id}`),
                 ]);
 
@@ -49,7 +49,8 @@ const HistoryActivityScreen = () => {
         };
 
         fetchHistory();
-    }, [user._id]);
+    }, [user]); // ❗ Chỉ theo dõi user, không phải user._id
+
 
     if (loading) return <ActivityIndicator size="large" style={{ marginTop: 40 }} />;
 

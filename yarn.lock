@@ -3555,6 +3555,11 @@ event-target-shim@^5.0.0:
   resolved "https://registry.npmjs.org/event-target-shim/-/event-target-shim-5.0.1.tgz"
   integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
 
+events@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.npmjs.org/events/-/events-3.3.0.tgz"
+  integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
+
 execa@^5.0.0:
   version "5.1.1"
   resolved "https://registry.npmjs.org/execa/-/execa-5.1.1.tgz"
@@ -4072,7 +4077,7 @@ internal-slot@^1.1.0:
     hasown "^2.0.2"
     side-channel "^1.1.0"
 
-invariant@^2.2.4:
+invariant@^2.2.4, invariant@2.2.4:
   version "2.2.4"
   resolved "https://registry.npmjs.org/invariant/-/invariant-2.2.4.tgz"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -5800,7 +5805,7 @@ react-native-is-edge-to-edge@^1.1.7, react-native-is-edge-to-edge@1.1.7:
   resolved "https://registry.npmjs.org/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.7.tgz"
   integrity sha512-EH6i7E8epJGIcu7KpfXYXiV2JFIYITtq+rVS8uEb+92naMRBdxhTuS8Wn2Q7j9sqyO0B+Xbaaf9VdipIAmGW4w==
 
-react-native-maps@^1.24.3:
+react-native-maps@1.24.3:
   version "1.24.3"
   resolved "https://registry.npmjs.org/react-native-maps/-/react-native-maps-1.24.3.tgz"
   integrity sha512-cF5oTA8z24QqGIRFfDcsXLEs/gCd0RhaJ9KPv/2HiogKD5gpjh1naimZUJQ6IsEcUngSSk8iov6p2jd7dB+/bQ==
@@ -5857,7 +5862,22 @@ react-native-video@^6.16.0:
   resolved "https://registry.npmjs.org/react-native-video/-/react-native-video-6.16.0.tgz"
   integrity sha512-FS9lb7qCd5wN6KAifziXH8PogAkAPy5YD8lJ2t/1FkBG+09hD+CsP4C7EfWFzvY/RxhO30iVZ1g5ZquofKIzrg==
 
-react-native@*, "react-native@^0.0.0-0 || >=0.65 <1.0", react-native@^0.80.1, "react-native@>= 0.76.0", react-native@>=0.70.0:
+react-native-webview@^13.15.0, react-native-webview@>=7.0.0:
+  version "13.15.0"
+  resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.15.0.tgz"
+  integrity sha512-Vzjgy8mmxa/JO6l5KZrsTC7YemSdq+qB01diA0FqjUTaWGAGwuykpJ73MDj3+mzBSlaDxAEugHzTtkUQkQEQeQ==
+  dependencies:
+    escape-string-regexp "^4.0.0"
+    invariant "2.2.4"
+
+react-native-youtube-iframe@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.npmjs.org/react-native-youtube-iframe/-/react-native-youtube-iframe-2.4.1.tgz"
+  integrity sha512-MIzVlQYp6sc/Z7b0YwluALd0UbACQ7vscpcVVTmcHvQ5ujN2f6LJdDFxI++xy7TUeJS73k8vBdlznb5bT/P/Gg==
+  dependencies:
+    events "^3.3.0"
+
+react-native@*, "react-native@^0.0.0-0 || >=0.65 <1.0", react-native@^0.80.1, "react-native@>= 0.76.0", react-native@>=0.60, react-native@>=0.70.0:
   version "0.80.1"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.80.1.tgz"
   integrity sha512-cIiJiPItdC2+Z9n30FmE2ef1y4522kgmOjMIoDtlD16jrOMNTUdB2u+CylLTy3REkWkWTS6w8Ub7skUthkeo5w==
@@ -5919,7 +5939,7 @@ react-test-renderer@19.1.0:
     react-is "^19.1.0"
     scheduler "^0.26.0"
 
-react@*, "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.9.0 || ^17.0.0 || ^18 || ^19", "react@^18.0 || ^19", react@^19.1.0, "react@>= 18.2.0", "react@>= 18.3.1", react@>=16.8, react@>=17.0.0, react@>=18.1.0, react@19.1.0:
+react@*, "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.9.0 || ^17.0.0 || ^18 || ^19", "react@^18.0 || ^19", react@^19.1.0, "react@>= 18.2.0", "react@>= 18.3.1", react@>=16.8, react@>=16.8.6, react@>=17.0.0, react@>=18.1.0, react@19.1.0:
   version "19.1.0"
   resolved "https://registry.npmjs.org/react/-/react-19.1.0.tgz"
   integrity sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==
