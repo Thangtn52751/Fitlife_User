@@ -12,6 +12,12 @@ import ForgotPasswordScreen from '../screens/ForgotPassword';
 import ConfirmationCodeScreen from '../screens/ConfrimPassword';
 import ResetPasswordScreen from '../screens/ChangePassword';
 
+import ActivityScreen from '../screens/ActivityScreen';
+import HistoryActivityScreen from '../screens/HistoryActivityScreen';
+import ExerciseVideoScreen from '../screens/ExerciseScreen/ExerciseVideoScreen';
+import ExerciseDetailScreen from '../screens/ExerciseScreen/ExerciseDetailScreen';
+import ExerciseHistoryScreen from '../screens/ExerciseScreen/ExerciseHistoryScreen';
+
 import BmiScreen from '../screens/BMIScreen';
 import AddBmiScreen from '../screens/AddBMIScreen';
 import NotificationScreen from '../screens/NotificationScreen';
@@ -95,6 +101,14 @@ export default function MainNav() {
         />
         <Stack.Screen name="Home" component={BottomTab} />
 
+        <Stack.Screen name="ActivityScreen" component={ActivityScreen} />
+        <Stack.Screen name="HistoryActivityScreen" component={HistoryActivityScreen} />
+        <Stack.Screen name="ExerciseVideoScreen" component={ExerciseVideoScreen} />
+        <Stack.Screen name="ExerciseDetailScreen" component={ExerciseDetailScreen} />
+        <Stack.Screen name="ExerciseHistoryScreen" component={ExerciseHistoryScreen} />
+        </Stack.Navigator>
+
+
           <Stack.Screen name="WaterEntryScreen" component={WaterEntryScreen} options={{ headerShown: false }} />
           <Stack.Screen name="WaterGoalScreen" component={WaterGoalScreen} options={{ headerShown: false }} />
           <Stack.Screen name="DrinkWaterGlassScreen" component={DrinkWaterScreen} options={{ headerShown: false }} />
@@ -112,6 +126,7 @@ export default function MainNav() {
 
         
       </Stack.Navigator>
+
     </NavigationContainer>
   );S
 }

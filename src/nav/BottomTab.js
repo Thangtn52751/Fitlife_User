@@ -4,9 +4,17 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from '../screens/HomeScreen';
+
+import AnalysisScreen from '../screens/AnalysisScreen.js';
+import ActivityScreen from '../screens/ActivityScreen.js';
+import MeditationScreen from '../screens/MeditationScreen.js';
+import ProfileScreen from '../screens/ProfileScreen.js';
+import ExerciseVideoScreen from '../screens/ExerciseScreen/ExerciseVideoScreen.js';
+
 import AnalysisScreen from '../screens/AnalysisScreen';
 import MeditationScreen from '../screens/MeditationScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -47,8 +55,8 @@ export default function TabNavigator() {
 
 
       <Tab.Screen
-        name="Meditation"
-        component={MeditationScreen}
+        name="ExerciseVideoScreen"
+        component={ExerciseVideoScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={styles.iconWrapper}>
