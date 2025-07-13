@@ -12,7 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { SONG_URL } from '../redux/config';
+import { API_BASE_URL, SONG_URL } from '../redux/config';
 
 const HomeScreen = ({ navigation }) => {
   const [exercises, setExercises] = useState([]);
@@ -25,7 +25,7 @@ const HomeScreen = ({ navigation }) => {
   // ✅ Fetch exercises
   const fetchExercises = async () => {
     try {
-      const res = await axios.get('http://192.168.1.8:3000/api/exercises', {
+      const res = await axios.get(`${API_BASE_URL}/exercises`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -33,12 +33,16 @@ const HomeScreen = ({ navigation }) => {
 
       const data = res.data;
 
-      if (data && Array.isArray(data.data)) {
-        setExercises(data.data);
+      // ✅ Nếu res.data là mảng thì dùng luôn
+      if (Array.isArray(data)) {
+        setExercises(data.slice(0, 5));
+      } else if (Array.isArray(data.data)) {
+        setExercises(data.data.slice);
       } else {
         console.warn('⚠️ Dữ liệu exercises không đúng định dạng:', data);
         setExercises([]);
       }
+
     } catch (error) {
       console.error('❌ Lỗi lấy dữ liệu exercises:', error);
       setExercises([]);
@@ -46,6 +50,7 @@ const HomeScreen = ({ navigation }) => {
       setLoadingExercises(false);
     }
   };
+
 
   // ✅ Fetch songs
   const fetchSongs = async () => {
@@ -127,7 +132,7 @@ const HomeScreen = ({ navigation }) => {
             key={item._id}
             style={styles.exerciseCard}
             onPress={() =>
-              navigation.navigate('ExerciseDetail', {
+              navigation.navigate('ExerciseVideoScreen', {
                 exerciseId: item._id,
                 exerciseData: item,
               })
@@ -140,12 +145,6 @@ const HomeScreen = ({ navigation }) => {
             <View style={styles.exerciseInfo}>
               <Text style={styles.exerciseTitle}>{item.title}</Text>
               <Text style={styles.exerciseSubtitle}>{item.description}</Text>
-              <Text style={styles.exerciseSubtitle}>
-                ⏱ {item.durationMin} phút • 🔥 {item.calories} Kcal
-              </Text>
-            </View>
-            <View style={styles.levelTag}>
-              <Text style={styles.levelText}>{item.level}</Text>
             </View>
           </TouchableOpacity>
         ))
