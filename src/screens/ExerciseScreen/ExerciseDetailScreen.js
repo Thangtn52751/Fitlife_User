@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     View, SafeAreaView, Text, TouchableOpacity,
     StyleSheet, Alert, ScrollView
@@ -6,14 +6,37 @@ import {
 import YoutubePlayer from "react-native-youtube-iframe";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { saveExerciseHistory } from './service/historyService';
+import { fetchRoundsByExerciseId } from './service/roundService';
 import { useSelector } from 'react-redux';
 
 const ExerciseDetailScreen = ({ route, navigation }) => {
     const { exercise } = route.params;
     const [playing, setPlaying] = useState(true);
     const [hasFinished, setHasFinished] = useState(false);
+    const [segments, setSegments] = useState([]);
     const playerRef = useRef();
     const user = useSelector(state => state.auth.user);
+
+    useEffect(() => {
+        const loadSegments = async () => {
+            try {
+                const rounds = await fetchRoundsByExerciseId(exercise._id);
+                let accumulatedTime = 0;
+                const mapped = rounds.map(round => {
+                    const segment = {
+                        title: round.title,
+                        time: accumulatedTime,
+                    };
+                    accumulatedTime += round.durationSec;
+                    return segment;
+                });
+                setSegments(mapped);
+            } catch (err) {
+                console.error("❌ Lỗi khi tải rounds:", err);
+            }
+        };
+        loadSegments();
+    }, [exercise._id]);
 
     const extractYoutubeId = (url) => {
         const match = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -56,7 +79,7 @@ const ExerciseDetailScreen = ({ route, navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 10 }}>
                 <Ionicons name="chevron-back" size={26} color="#111827" />
             </TouchableOpacity>
 
@@ -66,8 +89,6 @@ const ExerciseDetailScreen = ({ route, navigation }) => {
                     <Ionicons name="time-outline" size={22} color="#10b981" style={{ marginLeft: 8 }} />
                 </TouchableOpacity>
             </View>
-
-            <View style={{ width: 26 }} />
 
             <View style={styles.videoWrapper}>
                 <YoutubePlayer
@@ -88,7 +109,7 @@ const ExerciseDetailScreen = ({ route, navigation }) => {
                 )}
 
                 <Text style={styles.segmentTitle}>📍 Các đoạn trong video</Text>
-                {exercise.segments?.map((seg, index) => (
+                {segments.map((seg, index) => (
                     <TouchableOpacity
                         key={index}
                         onPress={() => handleSeekTo(seg.time)}
@@ -112,22 +133,16 @@ const ExerciseDetailScreen = ({ route, navigation }) => {
 export default ExerciseDetailScreen;
 
 const styles = StyleSheet.create({
-    header: {
+    headerCenter: {
         flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
-        justifyContent: 'space-between',
-        backgroundColor: '#fff',
-        borderBottomWidth: 1,
-        borderColor: '#e5e7eb'
+        paddingVertical: 8,
     },
     headerTitle: {
         fontSize: 16,
         fontWeight: '600',
         color: '#111827',
-        flex: 1,
-        textAlign: 'center',
-        marginHorizontal: 10
     },
     videoWrapper: {
         height: 230,

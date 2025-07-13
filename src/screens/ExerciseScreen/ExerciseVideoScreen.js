@@ -5,7 +5,7 @@ import {
   StatusBar, ActivityIndicator
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { fetchYouTubeExercises } from "./service/youtubeService";
+import { fetchExercisesFromBackend } from "./service/exerciseService";
 
 const ExerciseVideoScreen = ({ navigation }) => {
   const [search, setSearch] = useState("");
@@ -16,15 +16,21 @@ const ExerciseVideoScreen = ({ navigation }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchYouTubeExercises("cardio tại nhà");
-      const withProgress = data.map(item => ({
-        ...item,
-        progress: Math.floor(Math.random() * 100)
-      }));
-      setExercises(withProgress);
-      setFilteredExercises(withProgress);
-      setPopular(withProgress.slice(0, 3));
-      setLoading(false);
+      try {
+        const data = await fetchExercisesFromBackend();
+        const withProgress = data.map(item => ({
+          ...item,
+          imageUrl: item.imageUrl || "https://via.placeholder.com/300",
+          progress: Math.floor(Math.random() * 100),
+        }));
+        setExercises(withProgress);
+        setFilteredExercises(withProgress);
+        setPopular(withProgress.slice(0, 3));
+      } catch (err) {
+        console.error("Lỗi khi lấy bài tập:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
@@ -88,18 +94,18 @@ const ExerciseVideoScreen = ({ navigation }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         data={popular}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item, index) => item._id || index.toString()}
         renderItem={({ item }) => <PopularCard item={item} />}
         contentContainerStyle={{ paddingHorizontal: 16 }}
       />
 
-      <Text style={styles.sectionTitle}>📂 Danh sách video</Text>
+      <Text style={styles.sectionTitle}>📂 Danh sách bài tập</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#22c55e" style={{ marginTop: 20 }} />
       ) : (
         <FlatList
           data={filteredExercises}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item, index) => item._id || index.toString()}
           renderItem={({ item }) => <TopicItem item={item} />}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 30 }}
           showsVerticalScrollIndicator={false}
