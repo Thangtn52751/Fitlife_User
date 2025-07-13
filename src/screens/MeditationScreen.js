@@ -6,7 +6,7 @@ const activities = [
   { name: 'Uống nước', icon: require('../img/image2.png'), highlight: true },
   { name: 'Thiền', icon: require('../img/image.png') },
   { name: 'BMI', icon: require('../img/bmi1.png'), target: 'Bmi' },
-   { name: 'Nhật ký', icon: require('../img/bmi1.png'), target: 'DiaryScreen' },
+  { name: 'Nhật ký', icon: require('../img/bmi1.png'), target: 'DiaryListScreen' },
 ];
 
 const MentalTrainingScreen = ({ navigation }) => {
