@@ -51,11 +51,12 @@ const HomeScreen = ({ navigation }) => {
   const fetchSongs = async () => {
     try {
       const res = await axios.get(SONG_URL);
-      const data = res.data;
-
-      if (data && Array.isArray(data)) {
-        setSongs(data);
+      const songList = res.data?.data;
+      if (Array.isArray(songList)) {
+         const shuffled = [...songList].sort(() => 0.5 - Math.random());
+      setSongs(shuffled.slice(0, 4)); 
       } else {
+        console.warn('⚠️ Dữ liệu không phải array:', songList);
         setSongs([]);
       }
     } catch (error) {
@@ -65,6 +66,7 @@ const HomeScreen = ({ navigation }) => {
       setLoadingSongs(false);
     }
   };
+ 
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -101,14 +103,14 @@ const HomeScreen = ({ navigation }) => {
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.songCard}
-              onPress={() => navigation.navigate('SongPlayer', { song: item })}
+              style={styles.songItem}
+              onPress={() => navigation.navigate('PlayerScreen', { song: item })}
             >
               <Image
-                source={{ uri: item.thumbnailUrl || 'https://via.placeholder.com/100' }}
+                source={{ uri: item.image || 'https://via.placeholder.com/100' }}
                 style={styles.songImage}
               />
-              <Text numberOfLines={1} style={styles.songTitle}>{item.title}</Text>
+              <Text numberOfLines={1} style={styles.songTitle}>{item.name}</Text>
             </TouchableOpacity>
           )}
         />
@@ -175,20 +177,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 15,
   },
-  songCard: {
-    width: 100,
-    marginRight: 10,
-    alignItems: 'center',
-  },
+  songItem: {
+  width: 100,
+  marginRight: 12,
+  alignItems: 'center',
+},
   songImage: {
     width: 100,
     height: 100,
-    borderRadius: 8,
-    marginBottom: 5,
+    borderRadius: 12,
+    marginBottom: 8,
   },
   songTitle: {
-    fontSize: 12,
+    fontSize: 13,
     textAlign: 'center',
+    fontWeight: '500',
+    color: '#333',
   },
   exerciseCard: {
     flexDirection: 'row',
