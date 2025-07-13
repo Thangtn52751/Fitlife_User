@@ -8,6 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // <-- cần thêm dòng này
+import { ADD_BMI_URL } from '../redux/config';
 
 const AddBmiScreen = ({ navigation }) => {
   const [weight, setWeight] = useState('');
@@ -37,52 +38,56 @@ const AddBmiScreen = ({ navigation }) => {
     return `${yyyy}-${mm}-${dd}T${hh}:${min}:00.000Z`;
   };
 
-  const handleSave = async () => {
-    const bmi = parseFloat(calculateBmi());
-    const status = getStatus(bmi);
-    const time = formatDate();
+ const handleSave = async () => {
+  const bmi = parseFloat(calculateBmi());
+  const status = getStatus(bmi);
+  const time = formatDate();
 
-    if (!weight || !height || parseFloat(weight) <= 0 || parseFloat(height) <= 0) {
-      Alert.alert('Thiếu thông tin', 'Vui lòng nhập cân nặng và chiều cao hợp lệ');
+  if (!weight || !height || parseFloat(weight) <= 0 || parseFloat(height) <= 0) {
+    Alert.alert('Thiếu thông tin', 'Vui lòng nhập cân nặng và chiều cao hợp lệ');
+    return;
+  }
+
+  try {
+    const token = await AsyncStorage.getItem('userToken');
+    const userDataString = await AsyncStorage.getItem('userInfo'); 
+    const user = userDataString ? JSON.parse(userDataString) : null;
+    const userId = user?._id || user?.id;
+
+    if (!token || !userId) {
+      Alert.alert('Lỗi xác thực', 'Không có token hoặc ID người dùng.');
       return;
     }
 
-    try {
-      // 🔐 Lấy token từ AsyncStorage
-      const token = await AsyncStorage.getItem('userToken');
-      if (!token) {
-        Alert.alert('Lỗi xác thực', 'Không tìm thấy token người dùng. Hãy đăng nhập lại.');
-        return;
-      }
+    const res = await fetch((`${ADD_BMI_URL}`), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        userId,
+        weight: parseFloat(weight),
+        height: parseFloat(height),
+        bmiValue: bmi,
+        status,
+        recordDate: time,
+      }),
+    });
 
-      const res = await fetch('http://10.0.2.2:3000/api/bmi', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // <-- Gửi token như trong Postman
-        },
-        body: JSON.stringify({
-          weight: parseFloat(weight),
-          height: parseFloat(height),
-          bmiValue: bmi,
-          status,
-          recordDate: time,
-        }),
-      });
-
-      if (res.ok) {
-        Alert.alert('Thành công', 'Đã thêm chỉ số BMI');
-        navigation.goBack();
-      } else {
-        const data = await res.json();
-        console.log('Lỗi server:', data);
-        Alert.alert('Lỗi', data.message || 'Không thể gửi dữ liệu BMI');
-      }
-    } catch (error) {
-      console.error('Lỗi gửi BMI:', error);
-      Alert.alert('Lỗi', 'Không thể kết nối đến server');
+    if (res.ok) {
+      Alert.alert('Thành công', 'Đã thêm chỉ số BMI');
+      navigation.goBack();
+    } else {
+      const data = await res.json();
+      console.log('❌ Lỗi server:', data);
+      Alert.alert('Lỗi', data.message || 'Không thể gửi dữ liệu BMI');
     }
-  };
+  } catch (error) {
+    console.error('Lỗi gửi BMI:', error);
+    Alert.alert('Lỗi', 'Không thể kết nối đến server');
+  }
+};
 
   return (
     <View style={styles.container}>

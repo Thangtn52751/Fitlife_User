@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import axios from 'axios';
+import { BMI_URL } from '../redux/config';
 const { width } = Dimensions.get('window');
 
 const BmiScreen = ({ navigation }) => {
@@ -21,46 +22,45 @@ const BmiScreen = ({ navigation }) => {
 
   useEffect(() => {
     const fetchBmiData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const token = await AsyncStorage.getItem('userToken');
-        const userDataString = await AsyncStorage.getItem('userData');
-        if (userDataString) {
-          const userData = JSON.parse(userDataString);
-          setUserName(userData.name || 'Người dùng');
-        }
+  setLoading(true);
+  setError(null);
+  try {
+    const token = await AsyncStorage.getItem('userToken');
+    const userDataString = await AsyncStorage.getItem('userInfo');
 
-        if (!token) {
-          setError('Bạn chưa đăng nhập. Vui lòng đăng nhập để xem BMI.');
-          setLoading(false);
-          return;
-        }
+    let userId = null;
 
-        const response = await fetch('http://192.168.1.4:3000/api/bmi/user', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+    if (userDataString) {
+      const userData = JSON.parse(userDataString);
+      setUserName(userData.name || 'Người dùng');
+      userId = userData._id || userData.id;
+    }
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Phiên đăng nhập đã hết hạn hoặc không hợp lệ.');
-          }
-          throw new Error(`Lỗi tải BMI: ${response.status} ${response.statusText}`);
-        }
+    if (!token || !userId) {
+      setError('Không có thông tin đăng nhập hoặc ID người dùng.');
+      setLoading(false);
+      return;
+    }
 
-        const data = await response.json();
-        setBmiList(data);
-      } catch (err) {
-        console.error('Lỗi load BMI:', err);
-        setError(err.message || 'Không thể tải dữ liệu BMI. Vui lòng thử lại.');
-      } finally {
-        setLoading(false);
-      }
-    };
+    const response = await axios.get(`${BMI_URL}/${userId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    setBmiList(response.data);
+  } catch (err) {
+    console.error('Lỗi load BMI:', err);
+    if (err.response?.status === 401) {
+      setError('Phiên đăng nhập đã hết hạn hoặc không hợp lệ.');
+    } else {
+      setError(err.message || 'Không thể tải dữ liệu BMI. Vui lòng thử lại.');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
     fetchBmiData();
 

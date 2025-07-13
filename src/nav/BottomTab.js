@@ -10,6 +10,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 
 import MeditationScreen from '../screens/MeditationScreen';
 import ExerciseVideoScreen from '../screens/ExerciseScreen/ExerciseVideoScreen';
+import MusicListScreen from '../screens/MusicListScreen';
 
 
 
@@ -61,6 +62,18 @@ export default function TabNavigator() {
             </View>
           ),
         }}
+      />
+
+      <Tab.Screen
+      name='Music'
+      component={MusicListScreen}
+      options={{
+        tabBarIcon: ({ focused }) => (
+        <View style={styles.iconWrapper}>
+         <Ionicons name="musical-notes-outline" size={22} color={focused ? '#4DA6FF' : '#666'} />
+        </View>
+        )
+      }}
       />
 
       <Tab.Screen
