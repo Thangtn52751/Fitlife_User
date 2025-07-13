@@ -18,18 +18,44 @@ const HomeScreen = ({ navigation }) => {
 
   const { user,token } = useSelector(state => state.auth);
 
-  
+  const fetchExercises = async () => {
+  try {
+    const response = await fetch('http://10.0.2.2:3000/api/exercises', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ Thêm token vào đây
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    console.log('Exercises:', data);
+
+    if (Array.isArray(data)) {
+      setExercises(data);
+    } else {
+      console.warn('Dữ liệu exercises không đúng định dạng:', data);
+      setExercises([]);
+    }
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu exercises:', error);
+    setExercises([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
   const unsubscribe = navigation.addListener('focus', () => {
     const hasUserId = user?.id || user?._id;
     if (hasUserId) {
       fetchExercises();
-      fetchBmi(); 
+      fetchBmi();  // ✅ mỗi lần quay về Home là gọi lại
     }
   });
 
-  return unsubscribe; 
+  return unsubscribe; // ✅ hủy listener khi unmount
 }, [navigation, user]);
 
 
@@ -65,10 +91,11 @@ const fetchBmi = async () => {
 
   return (
     <ScrollView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
           {user?.image ? (
-            <Image source={{ uri: user.image || require('../assets/logo.png') }} style={styles.avatar} />
+            <Image source={{ uri: user.image }} style={styles.avatar} />
           ) : null}
           <Text style={styles.username}>{user?.fullName || 'Chưa có tên'}</Text>
         </View>
@@ -77,6 +104,8 @@ const fetchBmi = async () => {
           <Icon name="notifications-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
+
+      {/* Stats */}
       <View style={styles.statsContainer}>
         <View style={styles.statBox}>
           <Text style={styles.statTitle}>BMI</Text>

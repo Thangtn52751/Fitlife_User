@@ -20,7 +20,6 @@ const ProfileScreen = ({ navigation }) => {
       {
         text: 'Đồng ý',
         onPress: () => {
-          // dispatch(logout());
           navigation.replace('Login');
         },
       },
@@ -29,7 +28,6 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Nút Edit góc phải */}
       <TouchableOpacity style={styles.editIcon} onPress={() => navigation.navigate('EditProfile')}>
         <Icon name="create-outline" size={22} color="#00A3FF" />
       </TouchableOpacity>
