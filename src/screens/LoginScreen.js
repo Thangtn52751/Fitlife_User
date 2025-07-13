@@ -13,7 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuth } from '../redux/actions/authActions';
 import { AUTH_URL } from '../redux/config';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // ✅ Thêm import này
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
@@ -57,9 +57,9 @@ export default function LoginScreen({ navigation }) {
 
     console.log("✅ Token nhận được:", token);
 
-    await AsyncStorage.setItem('userToken', token); // ✅ Lưu đúng key
-
-    dispatch(setAuth(user, token)); // ✅ Redux lưu
+    await AsyncStorage.setItem('userToken', token); 
+    await AsyncStorage.setItem('userInfo', JSON.stringify(user));
+    dispatch(setAuth(user, token)); 
 
   } catch (err) {
     console.log("❌ Login error:", err);

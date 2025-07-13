@@ -1,140 +1,121 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Alert,
+  View, Text, StyleSheet, Image, TouchableOpacity,
+  Alert, ActivityIndicator,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { useSelector, useDispatch } from 'react-redux';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = ({ navigation }) => {
-  const { user } = useSelector(state => state.auth);
-  const dispatch = useDispatch();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogout = () => {
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const data = await AsyncStorage.getItem('userInfo');
+        if (data) setUser(JSON.parse(data));
+      } catch (err) {
+        console.error('Failed to load user:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getUser();
+  }, []);
+
+  const handleLogout = async () => {
     Alert.alert('Đăng xuất', 'Bạn có chắc chắn muốn đăng xuất?', [
       { text: 'Hủy' },
       {
         text: 'Đồng ý',
-        onPress: () => {
+        onPress: async () => {
+          await AsyncStorage.removeItem('userToken');
+          await AsyncStorage.removeItem('userInfo');
           navigation.replace('Login');
         },
       },
     ]);
   };
 
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#00A3FF" />
+      </View>
+    );
+  }
+
+  const avatarSource = user?.image
+    ? { uri: user.image }
+    : require('../assets/logo.png');
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.editIcon} onPress={() => navigation.navigate('EditProfile')}>
-        <Icon name="create-outline" size={22} color="#00A3FF" />
-      </TouchableOpacity>
-
-      {/* User info */}
-      <View style={styles.profileContainer}>
-        <Image
-          source={{
-            uri: user?.image || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
-          }}
-          style={styles.avatar}
-        />
+      <View style={styles.header}>
+        <Image source={avatarSource} style={styles.avatar} />
         <View style={styles.userInfo}>
-          <Text style={styles.name}>{user?.fullName || 'Nguyễn Thanh Bình'}</Text>
-          <Text style={styles.info}>📞 {user?.phone || '0123 456 789'}</Text>
-          <Text style={styles.info}>✉️ {user?.email || 'nguyenbinh@gmail.com'}</Text>
+          <Text style={styles.name}>{user?.fullName || 'Fitlife Guest'}</Text>
+          <Text style={styles.email}>{user?.email || 'Chưa có email'}</Text>
         </View>
       </View>
 
-      {/* Options */}
-      <View style={styles.optionContainer}>
-        <OptionItem
-          icon="lock-closed-outline"
-          text="Đổi mật khẩu"
-          onPress={() => navigation.navigate('ChangePassword')}
-        />
-        <OptionItem
-          icon="document-text-outline"
-          text="Giới thiệu"
-          onPress={() => navigation.navigate('DetailProfile')}
-        />
-        <OptionItem
-          icon="log-out-outline"
-          text="Đăng xuất"
-          color="#00A3FF"
-          onPress={handleLogout}
-        />
+      <Text style={styles.profileTitle}>Profile</Text>
+
+      <View style={styles.options}>
+        <Option icon="open-outline" text="Cập nhật Profile" onPress={() => navigation.navigate('EditProfile')} />
+        <Option icon="lock-closed-outline" text="Đổi mật khẩu" onPress={() => navigation.navigate('ChangePassword')} />
+        <Option icon="document-text-outline" text="Giới thiệu" onPress={() => navigation.navigate('DetailProfile')} />
+        <Option icon="log-out-outline" text="Đăng xuất" color="#00A3FF" onPress={handleLogout} />
       </View>
     </View>
   );
 };
 
-const OptionItem = ({ icon, text, onPress, color = '#333' }) => (
+const Option = ({ icon, text, onPress, color = '#333' }) => (
   <TouchableOpacity style={styles.optionItem} onPress={onPress}>
-    <Icon name={icon} size={20} color={color} />
-    <Text style={[styles.optionText, { color }]}>{text}</Text>
-    <Icon name="chevron-forward" size={18} color="#999" style={{ marginLeft: 'auto' }} />
+    <View style={styles.optionLeft}>
+      <Ionicons name={icon} size={22} color={color} />
+      <Text style={[styles.optionText, { color }]}>{text}</Text>
+    </View>
+    <Ionicons name="chevron-forward" size={20} color="#ccc" />
   </TouchableOpacity>
 );
 
-export default ProfileScreen;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F8F8',
-    paddingHorizontal: 16,
-    paddingTop: 40,
-  },
-  editIcon: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    zIndex: 10,
-  },
-  profileContainer: {
+  container: { flex: 1, backgroundColor: '#fff', padding: 20 },
+  header: {
     flexDirection: 'row',
-    marginBottom: 30,
     alignItems: 'center',
-    marginTop: 10,
+    paddingBottom: 20,
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
   },
-  avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    marginRight: 16,
-  },
-  userInfo: {
-    flex: 1,
-  },
-  name: {
+  avatar: { width: 60, height: 60, borderRadius: 30 },
+  userInfo: { marginLeft: 15 },
+  name: { fontSize: 18, fontWeight: 'bold' },
+  email: { fontSize: 14, color: '#888', marginTop: 4 },
+  profileTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#222',
+    fontWeight: '600',
+    marginTop: 25,
+    marginBottom: 10,
   },
-  info: {
-    color: '#666',
-    fontSize: 14,
-    marginTop: 2,
-  },
-  optionContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    elevation: 2,
-  },
+  options: { gap: 12 },
   optionItem: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 14,
+    borderRadius: 10,
     alignItems: 'center',
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
-  optionText: {
-    marginLeft: 12,
-    fontSize: 15,
-    fontWeight: '500',
+  optionLeft: { flexDirection: 'row', alignItems: 'center' },
+  optionText: { marginLeft: 10, fontSize: 16 },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
+
+export default ProfileScreen;

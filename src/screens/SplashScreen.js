@@ -13,9 +13,9 @@ const SplashScreen = ({ navigation }) => {
         const hasSeen = await AsyncStorage.getItem('hasSeenOnboarding');
         setTimeout(() => {
           if (hasSeen === 'true') {
-            navigation.replace('Login'); // Đã xem => chuyển Login
+            navigation.replace('Login'); 
           } else {
-            navigation.replace('Onboarding'); // Chưa xem => vào Onboarding
+            navigation.replace('Onboarding'); 
           }
         }, 3500);
       } catch (err) {

@@ -6,148 +6,149 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  FlatList,
   ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { SONG_URL } from '../redux/config';
 
 const HomeScreen = ({ navigation }) => {
   const [exercises, setExercises] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [bmi, setBmi] = useState(null);
+  const [songs, setSongs] = useState([]);
+  const [loadingExercises, setLoadingExercises] = useState(true);
+  const [loadingSongs, setLoadingSongs] = useState(true);
 
-  const { user,token } = useSelector(state => state.auth);
+  const { user, token } = useSelector(state => state.auth);
 
+  // ✅ Fetch exercises
   const fetchExercises = async () => {
-  try {
-    const response = await fetch('http://10.0.2.2:3000/api/exercises', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`, // ✅ Thêm token vào đây
-        'Content-Type': 'application/json',
-      },
-    });
+    try {
+      const res = await axios.get('http://192.168.1.8:3000/api/exercises', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const data = await response.json();
-    console.log('Exercises:', data);
+      const data = res.data;
 
-    if (Array.isArray(data)) {
-      setExercises(data);
-    } else {
-      console.warn('Dữ liệu exercises không đúng định dạng:', data);
+      if (data && Array.isArray(data.data)) {
+        setExercises(data.data);
+      } else {
+        console.warn('⚠️ Dữ liệu exercises không đúng định dạng:', data);
+        setExercises([]);
+      }
+    } catch (error) {
+      console.error('❌ Lỗi lấy dữ liệu exercises:', error);
       setExercises([]);
+    } finally {
+      setLoadingExercises(false);
     }
-  } catch (error) {
-    console.error('Lỗi khi lấy dữ liệu exercises:', error);
-    setExercises([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
+  // ✅ Fetch songs
+  const fetchSongs = async () => {
+    try {
+      const res = await axios.get(SONG_URL);
+      const data = res.data;
+
+      if (data && Array.isArray(data)) {
+        setSongs(data);
+      } else {
+        setSongs([]);
+      }
+    } catch (error) {
+      console.error('❌ Lỗi lấy dữ liệu bài hát:', error);
+      setSongs([]);
+    } finally {
+      setLoadingSongs(false);
+    }
+  };
 
   useEffect(() => {
-  const unsubscribe = navigation.addListener('focus', () => {
-    const hasUserId = user?.id || user?._id;
-    if (hasUserId) {
+    const unsubscribe = navigation.addListener('focus', () => {
       fetchExercises();
-      fetchBmi();  // ✅ mỗi lần quay về Home là gọi lại
-    }
-  });
-
-  return unsubscribe; // ✅ hủy listener khi unmount
-}, [navigation, user]);
-
-
-
-const fetchBmi = async () => {
-  console.log('📌 Gọi hàm fetchBmi');
-  try {
-    const response = await fetch('http://10.0.2.2:3000/api/bmi/user', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      fetchSongs();
     });
-
-    console.log('📥 BMI response status:', response.status);
-
-    const data = await response.json();
-    console.log('📊 BMI data:', data);
-
-    if (Array.isArray(data) && data.length > 0) {
-      const sorted = data.sort((a, b) => new Date(b.recordDate) - new Date(a.recordDate));
-      console.log('✅ BMI sau sắp xếp:', sorted[0]);
-      setBmi(sorted[0].bmiValue);
-    } else {
-      console.warn('⚠️ Không có dữ liệu BMI hợp lệ:', data);
-    }
-  } catch (error) {
-    console.error('❌ Lỗi khi lấy dữ liệu BMI:', error);
-  }
-};
-
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          {user?.image ? (
-            <Image source={{ uri: user.image }} style={styles.avatar} />
-          ) : null}
-          <Text style={styles.username}>{user?.fullName || 'Chưa có tên'}</Text>
+          <Image
+            source={user?.image ? { uri: user.image } : require('../assets/logo.png')}
+            style={styles.avatar}
+          />
+          <Text style={styles.username}>{user?.fullName || 'Fitlife Guest'}</Text>
         </View>
-
         <TouchableOpacity onPress={() => navigation.navigate('Notification')}>
           <Icon name="notifications-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
 
-      {/* Stats */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statBox}>
-          <Text style={styles.statTitle}>BMI</Text>
-          <Text style={styles.statValue}>
-            {bmi !== null ? bmi.toFixed(2) : '...'}
-          </Text>
-        </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statTitle}>Calories</Text>
-          <Text style={styles.statValue}>510.43</Text>
-          <Text style={styles.kcal}>Kcal</Text>
-        </View>
-      </View>
+      <Text style={styles.sectionTitle}>Bài hát</Text>
+      {loadingSongs ? (
+        <ActivityIndicator size="large" color="#4DB4E5" />
+      ) : songs.length > 0 ? (
+        <FlatList
+          data={songs}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.songCard}
+              onPress={() => navigation.navigate('SongPlayer', { song: item })}
+            >
+              <Image
+                source={{ uri: item.thumbnailUrl || 'https://via.placeholder.com/100' }}
+                style={styles.songImage}
+              />
+              <Text numberOfLines={1} style={styles.songTitle}>{item.title}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      ) : (
+        <Text>Không có bài hát.</Text>
+      )}
 
-      <Text style={styles.sectionTitle}>Exercise</Text>
-
-      {loading ? (
+      <Text style={styles.sectionTitle}>Bài tập</Text>
+      {loadingExercises ? (
         <ActivityIndicator size="large" color="#4DB4E5" />
       ) : exercises.length > 0 ? (
         exercises.map((item) => (
-          <View key={item._id} style={styles.exerciseCard}>
+          <TouchableOpacity
+            key={item._id}
+            style={styles.exerciseCard}
+            onPress={() =>
+              navigation.navigate('ExerciseDetail', {
+                exerciseId: item._id,
+                exerciseData: item,
+              })
+            }
+          >
             <Image
-              source={{ uri: item.imageUrl }}
+              source={{ uri: item.imageUrl || 'https://via.placeholder.com/150' }}
               style={styles.exerciseImage}
             />
             <View style={styles.exerciseInfo}>
               <Text style={styles.exerciseTitle}>{item.title}</Text>
               <Text style={styles.exerciseSubtitle}>{item.description}</Text>
               <Text style={styles.exerciseSubtitle}>
-                ⏱ {item.durationMin} min • 🔥 {item.calories} Kcal
+                ⏱ {item.durationMin} phút • 🔥 {item.calories} Kcal
               </Text>
-              {item.videoUrl ? (
-                <Text style={styles.exerciseSubtitle}>🎬 {item.videoUrl}</Text>
-              ) : null}
             </View>
             <View style={styles.levelTag}>
               <Text style={styles.levelText}>{item.level}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         ))
       ) : (
-        <Text>Không có bài tập nào.</Text>
+        <Text>Không có bài tập.</Text>
       )}
     </ScrollView>
   );
@@ -163,28 +164,31 @@ const styles = StyleSheet.create({
   },
   userInfo: { flexDirection: 'row', alignItems: 'center' },
   avatar: { width: 40, height: 40, borderRadius: 20 },
-  username: { marginLeft: 10, fontWeight: 'bold', fontSize: 16 },
-
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 30,
+  username: {
+    marginLeft: 10,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#0077B6',
   },
-  statBox: {
-    backgroundColor: '#F9FBFD',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    width: '30%',
-  },
-  statTitle: { fontWeight: 'bold', marginBottom: 5 },
-  statValue: { fontSize: 18, color: '#4DB4E5' },
-  kcal: { fontSize: 12, color: 'gray' },
-
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginVertical: 15,
+  },
+  songCard: {
+    width: 100,
+    marginRight: 10,
+    alignItems: 'center',
+  },
+  songImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 5,
+  },
+  songTitle: {
+    fontSize: 12,
+    textAlign: 'center',
   },
   exerciseCard: {
     flexDirection: 'row',

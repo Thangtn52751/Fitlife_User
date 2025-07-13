@@ -9,6 +9,7 @@ import AnalysisScreen from '../screens/AnalysisScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 import MeditationScreen from '../screens/MeditationScreen';
+import ExerciseVideoScreen from '../screens/ExerciseScreen/ExerciseVideoScreen';
 
 
 
@@ -39,7 +40,7 @@ export default function TabNavigator() {
 
       <Tab.Screen
         name="Analysis"
-        component={AnalysisScreen}
+        component={ExerciseVideoScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={styles.iconWrapper}>

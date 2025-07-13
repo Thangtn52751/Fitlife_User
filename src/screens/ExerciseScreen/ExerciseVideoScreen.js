@@ -68,9 +68,6 @@ const ExerciseVideoScreen = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f9fafb" }}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={26} color="#111827" />
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>📺 Video Bài Tập</Text>
         <View style={{ width: 26 }} />
       </View>
@@ -127,7 +124,8 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111827'
+    color: '#111827',
+    textAlign: 'center',
   },
   searchContainer: {
     flexDirection: 'row',
