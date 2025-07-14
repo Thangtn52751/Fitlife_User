@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { API_BASE_URL } from '../redux/config';
 
 export default function WaterHistory({ navigation }) {
   const token = useSelector(state => state.auth.token);
@@ -14,7 +15,7 @@ export default function WaterHistory({ navigation }) {
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get('http://192.168.1.8:3000/api/water/history', {
+      const res = await axios.get(`${API_BASE_URL}/water/today/history`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setData(res.data.data || []);

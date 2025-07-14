@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { API_BASE_URL } from '../redux/config';
 
 export default function WaterEntryScreen({ navigation }) {
   const token = useSelector(state => state.auth.token);
@@ -10,7 +11,7 @@ export default function WaterEntryScreen({ navigation }) {
     const checkGoal = async () => {
       try {
         const res = await axios.get(
-          'http://192.168.1.8:3000/api/water/today',
+          `${API_BASE_URL}/water/today`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (res.data.data) {

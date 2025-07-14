@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { API_BASE_URL } from '../redux/config';
 
 const glassOptions = [
   { label: '10 glass', value: 10, sub: 'Summer time', icon: '🌴' },
@@ -22,7 +23,7 @@ export default function WaterGoalScreen({ navigation }) {
     setMessage('');
     try {
       await axios.post(
-        'http://192.168.1.8:3000/api/water/set',
+        `${API_BASE_URL}/water/set`, 
         { targetGlasses, volumePerGlass: 250 },
         { headers: { Authorization: `Bearer ${token}` } }
       );

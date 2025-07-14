@@ -3,9 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } fr
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { API_BASE_URL } from '../redux/config';
+const waterGlassImg = require('../assets/Glass.png');
 
-
-const waterGlassImg = require('../assets/Glass.png'); // Đặt ảnh trong assets!
 export default function DrinkWaterGlassScreen({ navigation }) {
   const token = useSelector(state => state.auth.token);
   const [todayGoal, setTodayGoal] = useState(null);
@@ -18,7 +18,7 @@ export default function DrinkWaterGlassScreen({ navigation }) {
   const fetchTodayGoal = async () => {
     try {
       const res = await axios.get(
-        'http://192.168.1.8:3000/api/water/today',
+        `${API_BASE_URL}/water/today`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTodayGoal(res.data.data);
@@ -121,7 +121,7 @@ return (
             onPress={async () => {
               try {
                 await axios.put(
-                  'http://192.168.1.138:3000/api/water/drink',
+                  `${API_BASE_URL}/water/drink`,
                   {},
                   { headers: { Authorization: `Bearer ${token}` } }
                 );

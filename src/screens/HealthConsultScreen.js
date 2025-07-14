@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import { API_BASE_URL } from '../redux/config';
 
 const HealthConsultScreen = () => {
   const [question, setQuestion] = useState('');
@@ -27,7 +28,7 @@ const HealthConsultScreen = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post('http://192.168.2.63:3000/api/consult', {
+      const res = await axios.post(`${API_BASE_URL}/consult`, {
         question,
       });
 
