@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 const activities = [
   { name: 'Uống nước', icon: require('../img/image2.png'), highlight: true, target: 'WaterEntryScreen' },
   { name: 'BMI', icon: require('../img/bmi1.png'), target: 'Bmi' },
-   { name: 'Nhật ký', icon: require('../assets/diary.png'), target: 'DiaryScreen' },
+  { name: 'Nhật ký', icon: require('../img/bmi1.png'), target: 'DiaryListScreen' },
 ];
 
 const MentalTrainingScreen = ({ navigation }) => {

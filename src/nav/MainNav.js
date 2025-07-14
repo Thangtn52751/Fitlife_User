@@ -11,31 +11,28 @@ import BottomTab from './BottomTab';
 import ForgotPasswordScreen from '../screens/ForgotPassword';
 import ConfirmationCodeScreen from '../screens/ConfrimPassword';
 import ResetPasswordScreen from '../screens/ChangePassword';
-
-
 import ExerciseVideoScreen from '../screens/ExerciseScreen/ExerciseVideoScreen';
 import ExerciseDetailScreen from '../screens/ExerciseScreen/ExerciseDetailScreen';
 import ExerciseHistoryScreen from '../screens/ExerciseScreen/ExerciseHistoryScreen';
-
 import BmiScreen from '../screens/BMIScreen';
 import AddBmiScreen from '../screens/AddBMIScreen';
 import NotificationScreen from '../screens/NotificationScreen';
-
 import DrinkWaterScreen from '../screens/DrinkWaterScreen';
 import WaterGoalScreen from '../screens/WaterGoalScreen';
 import WaterEntryScreen from '../screens/WaterEntryScreen';
 import CongratulationScreen from '../screens/CongratulationScreen';
 import ReportWaterScreen from '../screens/ReportWaterScreen';
 import WaterHistory from '../screens/WaterHistory';
-
 import MusicListScreen from '../screens/MusicListScreen';
 import PlayerScreen from '../screens/PlayMusic';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
-import DiaryScreen from '../screens/DiaryScreen';
-import DiaryEntryScreen from '../screens/DiaryEntryScreen';
 import DetailScreen from '../screens/DetailProfileScreen';
-import HealthConsultScreen from '../screens/HealthConsultScreen';
+import DiaryListScreen from '../screens/Diary/DiaryListScreen';
+import DiaryDetailScreen from '../screens/Diary/DiaryDetailScreen';
+import CreateDiaryScreen from '../screens/Diary/CreateDiaryScreen';
+
+
 
 const Stack = createNativeStackNavigator();
 
@@ -120,16 +117,9 @@ export default function MainNav() {
         <Stack.Screen name='PlayerScreen' component={PlayerScreen}/>
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-        <Stack.Screen name="DiaryScreen" component={DiaryScreen}
-         options={{
-            headerShown: true,
-            headerTransparent: true,
-            headerTitle: '',
-            headerBackTitleVisible: false,
-            headerTintColor: '#000000',
-          }}
-         />
-        <Stack.Screen name="DiaryEntry" component={DiaryEntryScreen} />
+        <Stack.Screen name="DiaryListScreen" component={DiaryListScreen} />
+        <Stack.Screen name="DiaryDetailScreen" component={DiaryDetailScreen} />
+        <Stack.Screen name="CreateDiaryScreen" component={CreateDiaryScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

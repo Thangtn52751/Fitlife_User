@@ -1,22 +1,13 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from '../screens/HomeScreen';
-
-import AnalysisScreen from '../screens/AnalysisScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-
 import MeditationScreen from '../screens/MeditationScreen';
-import ExerciseVideoScreen from '../screens/ExerciseScreen/ExerciseVideoScreen';
 import MusicListScreen from '../screens/MusicListScreen';
 
-
-
 const Tab = createBottomTabNavigator();
-
-
 
 export default function TabNavigator() {
   return (
@@ -38,19 +29,6 @@ export default function TabNavigator() {
           ),
         }}
       />
-
-      <Tab.Screen
-        name="Analysis"
-        component={ExerciseVideoScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View style={styles.iconWrapper}>
-              <Ionicons name="bar-chart-outline" size={22} color={focused ? '#4DA6FF' : '#666'} />
-            </View>
-          ),
-        }}
-      />
-
 
       <Tab.Screen
         name="MeditationScreen"
