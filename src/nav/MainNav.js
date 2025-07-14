@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Import các màn hình ở đây
+
 import SplashScreen from '../screens/SplashScreen';
 import OnBoardingScreen from '../screens/OnboardingCarousel';
 import LoginScreen from '../screens/LoginScreen';
@@ -31,6 +31,7 @@ import DetailScreen from '../screens/DetailProfileScreen';
 import DiaryListScreen from '../screens/Diary/DiaryListScreen';
 import DiaryDetailScreen from '../screens/Diary/DiaryDetailScreen';
 import CreateDiaryScreen from '../screens/Diary/CreateDiaryScreen';
+import HealthConsultScreen from '../screens/HealthConsultScreen';
 
 
 

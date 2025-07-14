@@ -63,7 +63,6 @@ const ProfileScreen = ({ navigation }) => {
       <Text style={styles.profileTitle}>Profile</Text>
 
       <View style={styles.options}>
-        <Option icon="open-outline" text="Cập nhật Profile" onPress={() => navigation.navigate('EditProfile')} />
         <Option icon="lock-closed-outline" text="Đổi mật khẩu" onPress={() => navigation.navigate('ForgotPassword')} />
         <Option icon="document-text-outline" text="Giới thiệu" onPress={() => navigation.navigate('DetailProfile')} />
         <Option icon="chatbubbles-outline" text="Tư vấn" onPress={() => navigation.navigate('HealthConsult')} />

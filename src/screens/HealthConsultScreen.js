@@ -27,7 +27,7 @@ const HealthConsultScreen = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post('http://192.168.1.8:3000/api/consult', {
+      const res = await axios.post('http://192.168.2.63:3000/api/consult', {
         question,
       });
 
