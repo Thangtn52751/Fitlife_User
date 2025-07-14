@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // <-- cần thêm dòng này
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ADD_BMI_URL } from '../redux/config';
 
 const AddBmiScreen = ({ navigation }) => {

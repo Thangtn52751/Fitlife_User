@@ -33,7 +33,7 @@ export default function WaterHistoryScreen({navigation}) {
 
   const fetchReport = async () => {
     try {
-      const res = await axios.get('http://192.168.154.92:3000/api/water/report', {
+      const res = await axios.get('http://192.168.1.8:3000/api/water/report', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setReport(res.data);

@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }) => {
 
   const { user, token } = useSelector(state => state.auth);
 
-  // ✅ Fetch exercises
+
   const fetchExercises = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/exercises`, {
@@ -33,11 +33,11 @@ const HomeScreen = ({ navigation }) => {
 
       const data = res.data;
 
-      // ✅ Nếu res.data là mảng thì dùng luôn
+  
       if (Array.isArray(data)) {
         setExercises(data.slice(0, 5));
       } else if (Array.isArray(data.data)) {
-        setExercises(data.data.slice);
+        setExercises(data.data.slice(0, 5));
       } else {
         console.warn('⚠️ Dữ liệu exercises không đúng định dạng:', data);
         setExercises([]);

@@ -19,7 +19,7 @@ const NotificationScreen = () => {
     const token = await AsyncStorage.getItem('userToken');
     console.log('Token:', token);
 
-    const response = await fetch('http://10.0.2.2:3000/api/notifications/user', {
+    const response = await fetch('http://192.168.1.8:3000/api/notifications/user', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

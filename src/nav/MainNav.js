@@ -35,7 +35,7 @@ import EditProfileScreen from '../screens/EditProfileScreen';
 import DiaryScreen from '../screens/DiaryScreen';
 import DiaryEntryScreen from '../screens/DiaryEntryScreen';
 import DetailScreen from '../screens/DetailProfileScreen';
-
+import HealthConsultScreen from '../screens/HealthConsultScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -97,9 +97,16 @@ export default function MainNav() {
             headerTintColor: '#000000',
           }}
         />
+        <Stack.Screen name="HealthConsult" component={HealthConsultScreen}
+         options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: 'Tư vấn sức khỏe',
+            headerBackTitleVisible: false,
+            headerTintColor: '#000000',
+          }}
+         />
         <Stack.Screen name="Home" component={BottomTab} />
-
-      
         <Stack.Screen name="ExerciseVideoScreen" component={ExerciseVideoScreen} />
         <Stack.Screen name="ExerciseDetailScreen" component={ExerciseDetailScreen} />
         <Stack.Screen name="ExerciseHistoryScreen" component={ExerciseHistoryScreen} />
@@ -113,8 +120,17 @@ export default function MainNav() {
         <Stack.Screen name='PlayerScreen' component={PlayerScreen}/>
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-        <Stack.Screen name="DiaryScreen" component={DiaryScreen} />
+        <Stack.Screen name="DiaryScreen" component={DiaryScreen}
+         options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: '',
+            headerBackTitleVisible: false,
+            headerTintColor: '#000000',
+          }}
+         />
         <Stack.Screen name="DiaryEntry" component={DiaryEntryScreen} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

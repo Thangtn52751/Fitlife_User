@@ -27,12 +27,11 @@ const DetailScreen = ({ navigation }) => {
         <Text style={styles.info}>📞 {user?.phone || 'Chưa có số điện thoại'}</Text>
       </View>
 
-      {/* Thông tin chi tiết */}
       <View style={styles.detailBox}>
         <DetailRow label="Tuổi" value={user?.age?.toString() || 'Không rõ'} />
         <DetailRow label="Giới tính" value={user?.gender || 'Không xác định'} />
         <DetailRow label="ID người dùng" value={user?._id || 'Không có'} />
-        {/* Thêm nếu có thêm trường nào khác bạn cần */}
+      
       </View>
 
       {/* Các chức năng */}

@@ -18,7 +18,7 @@ export default function DrinkWaterGlassScreen({ navigation }) {
   const fetchTodayGoal = async () => {
     try {
       const res = await axios.get(
-        'http://192.168.1.138:3000/api/water/today',
+        'http://192.168.1.8:3000/api/water/today',
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTodayGoal(res.data.data);

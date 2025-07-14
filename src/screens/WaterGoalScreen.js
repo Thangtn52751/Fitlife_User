@@ -22,7 +22,7 @@ export default function WaterGoalScreen({ navigation }) {
     setMessage('');
     try {
       await axios.post(
-        'http://192.168.154.92:3000/api/water/set',
+        'http://192.168.1.8:3000/api/water/set',
         { targetGlasses, volumePerGlass: 250 },
         { headers: { Authorization: `Bearer ${token}` } }
       );

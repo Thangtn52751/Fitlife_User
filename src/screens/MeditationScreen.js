@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
 const activities = [
-  { name: 'Đọc Sách', icon: require('../img/book.png') },
-  { name: 'Uống nước', icon: require('../img/image2.png'), highlight: true },
-  { name: 'Thiền', icon: require('../img/image.png') },
+  { name: 'Uống nước', icon: require('../img/image2.png'), highlight: true, target: 'WaterEntryScreen' },
   { name: 'BMI', icon: require('../img/bmi1.png'), target: 'Bmi' },
-   { name: 'Nhật ký', icon: require('../img/bmi1.png'), target: 'DiaryScreen' },
+   { name: 'Nhật ký', icon: require('../assets/diary.png'), target: 'DiaryScreen' },
 ];
 
 const MentalTrainingScreen = ({ navigation }) => {

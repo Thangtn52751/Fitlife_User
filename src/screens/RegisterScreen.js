@@ -26,7 +26,7 @@ export default function SignUpScreen({ navigation }) {
   const [confirm, setConfirm]= useState('');
   const [hide1, setHide1]= useState(true);
   const [hide2, setHide2]= useState(true);
-  const [image, setImage] = useState(null); // base64 hoặc URI
+  const [image, setImage] = useState(null);
 
   const dispatch = useDispatch();
   const { user } = useSelector(s => s.auth);
@@ -86,16 +86,6 @@ export default function SignUpScreen({ navigation }) {
         <Text style={styles.title}>Sign up</Text>
         <Text style={styles.subtitle}>Create an account here</Text>
 
-        {/* Avatar chọn ảnh */}
-        <TouchableOpacity style={styles.avatarWrapper} onPress={pickImage}>
-          {image?.uri ? (
-            <Image source={{ uri: image.uri }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Ionicons name="camera-outline" size={28} color="#888" />
-            </View>
-          )}
-        </TouchableOpacity>
 
         {/* Full Name */}
         <View style={styles.inputRow}>
@@ -181,7 +171,7 @@ const styles = StyleSheet.create({
     left: 16,
     padding: 8,
   },
-  title: { fontSize: 28, fontWeight: '700', color: '#333', marginTop: 100 },
+  title: { fontSize: 28, fontWeight: '700', color: '#333', marginTop: 200 },
   subtitle: { fontSize: 14, color: '#666', marginTop: 4, marginBottom: 32 },
 
   avatarWrapper: {

@@ -14,7 +14,7 @@ export default function WaterHistory({ navigation }) {
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get('http://192.168.154.92:3000/api/water/history', {
+      const res = await axios.get('http://192.168.1.8:3000/api/water/history', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setData(res.data.data || []);

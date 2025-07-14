@@ -10,7 +10,7 @@ export default function WaterEntryScreen({ navigation }) {
     const checkGoal = async () => {
       try {
         const res = await axios.get(
-          'http://192.168.1.138:3000/api/water/today',
+          'http://192.168.1.8:3000/api/water/today',
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (res.data.data) {
