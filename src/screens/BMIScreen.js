@@ -39,6 +39,7 @@ const BmiScreen = ({ navigation }) => {
     if (!token || !userId) {
       setError('Không có thông tin đăng nhập hoặc ID người dùng.');
       setLoading(false);
+      console.log(token, userId);
       return;
     }
 
@@ -205,7 +206,7 @@ const BmiScreen = ({ navigation }) => {
       <TouchableOpacity
         style={styles.fab}
         onPress={async () => {
-          const userDataString = await AsyncStorage.getItem('userData');
+         const userDataString = await AsyncStorage.getItem('userInfo');
           const userData = userDataString ? JSON.parse(userDataString) : {};
           navigation.navigate('AddBMI', { user: userData });
         }}

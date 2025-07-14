@@ -26,7 +26,6 @@ import WaterHistory from '../screens/WaterHistory';
 import MusicListScreen from '../screens/MusicListScreen';
 import PlayerScreen from '../screens/PlayMusic';
 import ProfileScreen from '../screens/ProfileScreen';
-import EditProfileScreen from '../screens/EditProfileScreen';
 import DetailScreen from '../screens/DetailProfileScreen';
 import DiaryListScreen from '../screens/Diary/DiaryListScreen';
 import DiaryDetailScreen from '../screens/Diary/DiaryDetailScreen';
@@ -117,7 +116,6 @@ export default function MainNav() {
         <Stack.Screen name='MusicListScreen' component={MusicListScreen}/>
         <Stack.Screen name='PlayerScreen' component={PlayerScreen}/>
         <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="DiaryListScreen" component={DiaryListScreen} />
         <Stack.Screen name="DiaryDetailScreen" component={DiaryDetailScreen} />
         <Stack.Screen name="CreateDiaryScreen" component={CreateDiaryScreen} />

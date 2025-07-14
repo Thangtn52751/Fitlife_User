@@ -5,10 +5,14 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { clearAuth } from '../redux/actions/authActions';
+import { CommonActions } from '@react-navigation/native';
 
 const ProfileScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getUser = async () => {
@@ -24,15 +28,26 @@ const ProfileScreen = ({ navigation }) => {
     getUser();
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     Alert.alert('Đăng xuất', 'Bạn có chắc chắn muốn đăng xuất?', [
       { text: 'Hủy' },
       {
         text: 'Đồng ý',
         onPress: async () => {
-          await AsyncStorage.removeItem('userToken');
-          await AsyncStorage.removeItem('userInfo');
-          navigation.replace('Login');
+          try {
+            await AsyncStorage.removeItem('userToken');
+            await AsyncStorage.removeItem('userInfo');
+            dispatch(clearAuth());
+
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+              })
+            );
+          } catch (err) {
+            console.error('Logout error:', err);
+          }
         },
       },
     ]);
@@ -75,7 +90,7 @@ const ProfileScreen = ({ navigation }) => {
 const Option = ({ icon, text, onPress, color = '#333' }) => (
   <TouchableOpacity style={styles.optionItem} onPress={onPress}>
     <View style={styles.optionLeft}>
-      <Ionicons name={icon} size={22} color={color} />
+<Ionicons name={icon} size={22} color={color} />
       <Text style={[styles.optionText, { color }]}>{text}</Text>
     </View>
     <Ionicons name="chevron-forward" size={20} color="#ccc" />
