@@ -60,6 +60,38 @@ export default function MainNav() {
           }}
         />
         <Stack.Screen name="Home" component={BottomTab} />
+<<<<<<< Updated upstream
+=======
+        <Stack.Screen name="ExerciseVideoScreen" component={ExerciseVideoScreen} />
+        <Stack.Screen name="ExerciseDetailScreen" component={ExerciseDetailScreen} />
+        <Stack.Screen name="ExerciseHistoryScreen" component={ExerciseHistoryScreen} />
+        <Stack.Screen name="WaterEntryScreen" component={WaterEntryScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="WaterGoalScreen" component={WaterGoalScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="DrinkWaterGlassScreen" component={DrinkWaterScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="CongratulationScreen" component={CongratulationScreen} options={{ headerShown: false}}/>
+        <Stack.Screen name="ReportWaterScreen" component={ReportWaterScreen} options={{ headerShown: false}}/>
+        <Stack.Screen name="WaterHistory" component={WaterHistory} options={{ headerShown: false}}/>
+        <Stack.Screen name='MusicListScreen' component={MusicListScreen}/>
+        <Stack.Screen name='PlayerScreen' component={PlayerScreen}/>
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+        <Stack.Screen name="DiaryListScreen" component={DiaryListScreen} options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: '',
+            headerBackTitleVisible: false,
+            headerTintColor: '#000000',
+          }}/>
+        <Stack.Screen name="DiaryDetailScreen" component={DiaryDetailScreen} />
+        <Stack.Screen name="CreateDiaryScreen" component={CreateDiaryScreen} options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerTitle: '',
+            headerBackTitleVisible: false,
+            headerTintColor: '#000000',
+          }} />
+
+>>>>>>> Stashed changes
       </Stack.Navigator>
     </NavigationContainer>
   );
